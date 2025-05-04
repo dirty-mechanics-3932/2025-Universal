@@ -16,6 +16,11 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ForwardLimitValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -42,11 +47,12 @@ public class MotorFX extends SubsystemBase implements MotorDef {
   /* Start at position 0, use slot 1 */
   // private final PositionTorqueCurrentFOC m_positionTorque = new
   // PositionTorqueCurrentFOC(0).withSlot(1);
-
+  
   private boolean sensorPhase = false;
   private boolean motorInvert = false;
 
   private final MotorOutputConfigs motorConfigs = new MotorOutputConfigs();
+
 
   MotorFX(String name, int id, int followId) {
     this.name = name;
@@ -265,11 +271,13 @@ public class MotorFX extends SubsystemBase implements MotorDef {
   }
 
   public void setPositionPID(PID pid, FeedbackDevice feedBack) {
-    // feedBackDevice = feedBack;
-    // setPositionPID(0, pid);
-    // PIDToMotor(pid, 0, Robot.config.kTimeoutMs);
+    
+    
+    //feedBackDevice = feedBack;
+    //setPositionPID(0, pid);
+    //PIDToMotor(pid, 0, Robot.config.kTimeoutMs);
   }
-
+  
   public void setVelocityPID(PID pid, int slot, FeedbackDevice feedbackDevice) {
     PIDToMotor(pid, slot, Robot.config.kTimeoutMs);
   }

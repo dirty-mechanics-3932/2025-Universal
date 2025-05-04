@@ -167,16 +167,19 @@ public class RobotContainer {
         redMotor.setEncoderPosition(0);
         // redMotor.setTestMode(true);
 
-        MotorFlex neoMotor = new MotorFlex("FlexMotor", 3, -1, true);
+        MotorFlex flexMotor = new MotorFlex("FlexMotor", 3, -1, true);
+        flexMotor.setLeds(leds);
+        flexMotor.setLogging(true);
+        flexMotor.setTestMode(true);
         // redMotor.setUpForTestCases(leds);
         // redMotor.setLogging(true);
         // redMotor.setEncoderTicksPerRev(2048);
-        Command redMoveCmd = Commands.run(() -> redMotor.setSpeed(driveController.getLeftTriggerAxis()), redMotor);
-        Command neoMoveCmd = Commands.run(() -> neoMotor.setSpeed(driveController.getRightTriggerAxis()), neoMotor);
-        new ScheduleCommand(Commands.parallel(redMoveCmd, neoMoveCmd).ignoringDisable(true)).schedule();
-        Command miniMove = Commands.run(() -> neoMotor.setSpeed(driveController.getLeftTriggerAxis()), neoMotor);
-        driveController.start().onTrue(miniMove);
-        new ScheduleCommand(miniMove);
+        //Command redMoveCmd = Commands.run(() -> redMotor.setSpeed(driveController.getLeftTriggerAxis()), redMotor);
+        //Command neoMoveCmd = Commands.run(() -> flexMotor.setSpeed(driveController.getRightTriggerAxis()), flexMotor);
+        //new ScheduleCommand(Commands.parallel(redMoveCmd, neoMoveCmd).ignoringDisable(true)).schedule();
+       // Command miniMove = Commands.run(() -> flexMotor.setSpeed(driveController.getLeftTriggerAxis()), flexMotor);
+        //driveController.start().onTrue(miniMove);
+        //new ScheduleCommand(miniMove);
         break;
       case MiniKeith: // Test mini
         // Use Talon SRX for drive train
