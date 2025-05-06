@@ -55,6 +55,7 @@ public class MotorSparkMax extends SubsystemBase {
     private double positionConversionFactor = 1.0;
     private double velocityConversionFactor = 1.0;
     private boolean testMode = false;
+    private int numberCyclesForDisplay = 1000000;
 
     public MotorSparkMax(String name, int id, int followId, boolean brakeMode, boolean invert) {
         this.name = name;
@@ -272,7 +273,7 @@ public class MotorSparkMax extends SubsystemBase {
     }
 
     public void periodic() {
-        if (Robot.count % 1 == 0) {
+        if (Robot.count % numberCyclesForDisplay == 0) {
             SmartDashboard.putNumber("Pos", getPos());
             SmartDashboard.putNumber("Cur", round2(motor.getOutputCurrent()));
             SmartDashboard.putNumber("Vel", round2(getSpeed()));
@@ -320,6 +321,13 @@ public class MotorSparkMax extends SubsystemBase {
         }
     }
 
+    public void setSmartTicks(int numberLoopsForDisplay) {
+        if (numberLoopsForDisplay <= 0)
+            this.numberCyclesForDisplay = Integer.MAX_VALUE;
+        else
+            this.numberCyclesForDisplay = numberLoopsForDisplay;
+    }
+
     enum Modes {
         POSITION, VELOCITY, POSMOTIONMAGIC, VELMOTIONMAGIC, SPEED;
 
@@ -343,32 +351,35 @@ public class MotorSparkMax extends SubsystemBase {
             stopMotor();
             setEncoderPosition(0.0);
             mode = mode.next(); // Get the next mode
-            logf("New Test Mode:%s\n", mode);
+            logf("***** Mode:%s for %s\n", mode, name);
         }
         lastStart = start;
         switch (mode) {
             case POSITION:
                 value = driveController.getHID().getPOV() / 10.0;
                 if (value >= 0.0) {
+                    if (setPoint != value)
+                        logf("%s set position:%.6f\n", name, value);
                     setPos(value);
                     setPoint = value;
-                    logf("Max set position:%.6f\n", value);
                 }
                 break;
             case VELOCITY:
                 value = driveController.getHID().getPOV() * 20.0;
                 if (value >= 0.0) {
+                    if (setPoint != value)
+                        logf("%s set velocity:%.2f\n", name, value);
                     setVelocity(value);
                     setPoint = value;
-                    logf("Max set velocity:%.2f\n", value);
                 }
                 break;
             case POSMOTIONMAGIC:
                 value = driveController.getHID().getPOV() / 10.0;
                 if (value >= 0.0) {
+                    if (setPoint != value)
+                        logf("%s set position motion magic:%.6f\n", name, value);
                     setPosMotionMagic(value);
                     setPoint = value;
-                    logf("Max set position motion magic:%.6f\n", value);
                 }
                 break;
             case VELMOTIONMAGIC:
@@ -376,17 +387,20 @@ public class MotorSparkMax extends SubsystemBase {
                 if (value >= 0.0) {
                     setVelocityMotionMagic(value);
                     setPoint = value;
-                    logf("Max set velocity motion magic:%.2f\n", value);
+                    logf("%s set velocity motion magic:%.2f\n", name, value);
                 }
                 break;
             case SPEED:
                 value = robotContainer.getSpeedFromTriggers();
-                if (value > 0.05)
-                    logf("Set Test speed:%.2f\n", value);
-                setSpeed(value);
-                setPoint = value;
+                if (value > 0.05) {
+                    if (setPoint != value)
+                        logf("%s Set speed:%.2f\n", name, value);
+                    setSpeed(value);
+                    setPoint = value;
+                }
                 break;
         }
+        RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
         SmartDashboard.putNumber("SetP", setPoint);
     }
 }

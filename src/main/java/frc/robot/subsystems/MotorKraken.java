@@ -29,6 +29,7 @@ public class MotorKraken extends SubsystemBase {
   private boolean testMode = false;
   private String name = "";
   private final TalonFX motor;
+  private int numberCyclesForDisplay = 1000000;
   // Start at position 0, use slot 0 for Postion Control
   private final PositionVoltage positionVoltage = new PositionVoltage(0).withSlot(0);
   // Start at velocity 0, use slot 1 for Velocity Control
@@ -67,21 +68,21 @@ public class MotorKraken extends SubsystemBase {
 
     /* Configure gear ratio */
     FeedbackConfigs fdb = configs.Feedback;
-    fdb.SensorToMechanismRatio = 12.8; // 12.8 rotor rotations per mechanism rotation
+    fdb.SensorToMechanismRatio = 1; // 1 rotor rotations per mechanism rotation
 
     // Configure Motion Magic 5 (mechanism) rotations per second cruise
-    configs.MotionMagic.withMotionMagicCruiseVelocity(RotationsPerSecond.of(5));
+    configs.MotionMagic.withMotionMagicCruiseVelocity(RotationsPerSecond.of(20));
     // Take approximately 0.5 seconds to reach max vel
-    configs.MotionMagic.withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10));
+    configs.MotionMagic.withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(50));
     // Take approximately 0.1 seconds to reach max accel
-    configs.MotionMagic.withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
+    // configs.MotionMagic.withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
 
     configs.Slot2.kS = 0.25; // Add 0.25 V output to overcome static friction
-    configs.Slot2.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
-    configs.Slot2.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
-    configs.Slot2.kP = 60; // A position error of 0.2 rotations results in 12 V output
+    configs.Slot2.kV = 2; // A velocity target of 1 rps results in 0.12 V output
+    configs.Slot2.kA = 2; // An acceleration of 1 rps/s requires 0.01 V output
+    configs.Slot2.kP = .5; // A position error of 0.2 rotations results in 12 V output
     configs.Slot2.kI = 0; // No output for integrated error
-    configs.Slot2.kD = 0.5; // A velocity error of 1 rps results in 0.5 V output
+    configs.Slot2.kD = 0; // A velocity error of 1 rps results in 0.5 V output
     // configs.MotionMagic.withMotionMagicCruiseVelocity(10.0); // Reduced from 20.0
     // configs.MotionMagic.withMotionMagicAcceleration(20.0); // Reduced from 40.0
     // configs.MotionMagic.withMotionMagicJerk(2000.0); // Reduced from 4000.0
@@ -121,22 +122,30 @@ public class MotorKraken extends SubsystemBase {
     motor.setControl(velocityVoltage.withVelocity(value));
   }
 
+  public void setSmartTicks(int numberLoopsForDisplay) {
+    if (numberLoopsForDisplay <= 0)
+      this.numberCyclesForDisplay = Integer.MAX_VALUE;
+    else
+      this.numberCyclesForDisplay = numberLoopsForDisplay;
+  }
+
   @Override
   public void periodic() {
     double err = motor.getClosedLoopError().getValueAsDouble();
     double pos = motor.getPosition().getValueAsDouble();
     double velocity = motor.getVelocity().getValueAsDouble();
     double current = motor.getStatorCurrent().getValueAsDouble();
-    SmartDashboard.putNumber("Err", err);
-    SmartDashboard.putNumber("Pos", pos);
-    SmartDashboard.putNumber("Vel", velocity);
-    SmartDashboard.putNumber("RPM", velocity * 60.0); // Get Velocity in PRM
-    SmartDashboard.putNumber("Cur", current);
-    SmartDashboard.putNumber("SetP", setP);
-    SmartDashboard.putString("Mode:", mode.toString());
-    if (Math.abs(velocity) > 0.05 && myLogging && Robot.count % 10 == 0) {
-      logf("%s velocity:%.2f RPM:%.2f current:%.2f pos:%.2f err:%.2f\n", name, velocity, velocity * 60.0, current, pos,
-          err);
+    if (Robot.count % numberCyclesForDisplay == 0) {
+      SmartDashboard.putNumber("Err", err);
+      SmartDashboard.putNumber("Pos", pos);
+      SmartDashboard.putNumber("Vel", velocity);
+      SmartDashboard.putNumber("RPM", velocity * 60.0); // Get Velocity in PRM
+      SmartDashboard.putNumber("Cur", current);
+      SmartDashboard.putNumber("SetP", setP);
+      SmartDashboard.putString("Mode", mode.toString());
+    }
+    if (Math.abs(velocity) > 0.05 && myLogging && Robot.count % 20 == 0) {
+      logf("%s vel:%.2f RPM:%.2f cur:%.2f pos:%.2f err:%.2f\n", name, velocity, velocity * 60.0, current, pos, err);
     }
     if (testMode)
       testCases();
@@ -165,43 +174,49 @@ public class MotorKraken extends SubsystemBase {
       setSpeed(0);
       motor.setPosition(0);
       mode = mode.next(); // Get the next mode
-      logf("New Test Mode:%s\n", mode);
+      logf("***** Mode:%s for %s\n", mode, name);
     }
     lastStart = start;
     switch (mode) {
       case POSITION:
         value = driveController.getHID().getPOV() / 10.0;
         if (value >= 0.0) {
+          if (setP != value)
+            logf("%s set position:%.2f\n", name, value);
           setPos(value);
           setP = value;
-          logf("%s set position:%.2f\n", name, value);
         }
         break;
       case VELOCITY:
         // POV 270 degrees is 100
         value = driveController.getHID().getPOV() / (270.0 / 100.0);
-        setP = value;
         if (value >= 0) {
+          if (setP != value)
+            logf("%s set velocity:%.2f\n", name, value);
+          setP = value;
           setVelocity(value);
-          logf("%s set velocity:%.2f\n", name, value);
+
         }
         break;
       case MOTIONMAGIC:
-        value = driveController.getHID().getPOV() / 10.0;
-        setP = value;
+        value = driveController.getHID().getPOV() / 2.0;
         if (value >= 0) {
+          if (setP != value)
+            logf("%s set magic motion position:%.2f\n", name, value);
+          setP = value;
           setPositionMotionMagic(value);
-          logf("%s set magic mition position:%.2f\n", name, value);
         }
         break;
       case SPEED:
         value = robotContainer.getSpeedFromTriggers();
         if (value > 0.05) {
-          logf("Set Test speed:%.2f\n", value);
+          if (setP != value)
+            logf("Set Test speed:%.2f\n", value);
           setP = value;
         }
         setSpeed(value);
         break;
     }
+    RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
   }
 }

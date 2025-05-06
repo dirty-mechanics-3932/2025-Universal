@@ -39,7 +39,7 @@ import java.util.Optional;
  * }
  */
 public class Robot extends TimedRobot {
-  public static int count = 0;
+  public static int count = 1;
   public static RobotContainer robotContainer;
   public static Optional<Alliance> alliance;
   public static boolean debug = true;
