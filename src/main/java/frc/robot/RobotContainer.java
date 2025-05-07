@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Config.RobotType;
 import frc.robot.subsystems.DrivetrainJaguar;
 import frc.robot.subsystems.DrivetrainSRX;
@@ -140,7 +141,8 @@ public class RobotContainer {
       case Simulation:
         break;
       case BlondeMini:
-        new DrivetrainSRX(driveHID);
+        // new DrivetrainSRX(driveHID);
+        motorKraken = new MotorKraken("testSysid", 25, -1,true);
         boolean testSmartMaxBlonde = true;
         MotorSparkMax motor = new MotorSparkMax("TestMax", 20, -1, false, false);
         if (testSmartMaxBlonde) {
@@ -324,19 +326,29 @@ public class RobotContainer {
   Trigger tr = new Trigger(triggers::getSwitch);
 
   private void configureButtonBindings() {
-    driveController.x().onTrue(testCmd);
-    driveController
-        .back()
-        .whileTrue(
-            new InstantCommand(
-                new Runnable() {
-                  public void run() {
-                    Robot.yawProvider.zeroYaw();
-                    logf("Hit back on Game Pad\n");
-                    setMotorForTest();
-                  }
-                }));
-    tr.onTrue(testTrigger);
+    // driveController.x().onTrue(testCmd);
+    // driveController
+    //     .back()
+    //     .whileTrue(
+    //         new InstantCommand(
+    //             new Runnable() {
+    //               public void run() {
+    //                 Robot.yawProvider.zeroYaw();
+    //                 logf("Hit back on Game Pad\n");
+    //                 setMotorForTest();
+    //               }
+    //             }));
+    // tr.onTrue(testTrigger);
+
+    if (motorKraken != null) {
+      driveController.a().whileTrue(motorKraken.sysIdDynamic(Direction.kForward));
+      
+      driveController.b().whileTrue(motorKraken.sysIdDynamic(Direction.kReverse));
+      
+      driveController.x().whileTrue(motorKraken.sysIdQuasistatic(Direction.kForward));
+      
+      driveController.y().whileTrue(motorKraken.sysIdQuasistatic(Direction.kReverse));
+    }
   }
 
   // Initializes a DigitalInput

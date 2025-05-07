@@ -13,6 +13,7 @@ import static frc.robot.utilities.Util.splashScreen;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 //import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,25 +21,42 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.YawProvider;
 import java.util.Optional;
 
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.urcl.URCL;
+
+import com.google.flatbuffers.Constants;
+
 // import dev.doglog.DogLog;
 // import dev.doglog.DogLogOptions;
 
 /**
  * file:///C:/Users/Public/wpilib/2025/documentation/rtd/frc-docs-latest/index.html#document-docs/software/support/support-resources
  *
- * <p>software for 2025 --
+ * <p>
+ * software for 2025 --
  * https://docs.wpilib.org/en/latest/docs/zero-to-robot/step-2/wpilib-setup.html
  *
- * <p>Sometimes the garbage collector won’t run frequently enough to keep up with the quantity of
- * allocations. As Java provides a way to trigger a garbage collection to occur, running it on a
- * periodic basis may reduce peak memory usage. This can be done by adding a Timer and a periodic
+ * <p>
+ * Sometimes the garbage collector won’t run frequently enough to keep up with
+ * the quantity of
+ * allocations. As Java provides a way to trigger a garbage collection to occur,
+ * running it on a
+ * periodic basis may reduce peak memory usage. This can be done by adding a
+ * Timer and a periodic
  * check:
  *
- * <p>Timer m_gcTimer = new Timer(); public Robot() { m_gcTimer.start(); } public void periodic() {
- * // run the garbage collector every 5 seconds if (m_gcTimer.advanceIfElapsed(5)) { System.gc(); }
+ * <p>
+ * Timer m_gcTimer = new Timer(); public Robot() { m_gcTimer.start(); } public
+ * void periodic() {
+ * // run the garbage collector every 5 seconds if
+ * (m_gcTimer.advanceIfElapsed(5)) { System.gc(); }
  * }
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   public static int count = 0;
   public static RobotContainer robotContainer;
   public static Optional<Alliance> alliance;
@@ -49,6 +67,18 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    Logger.addDataReceiver(new WPILOGWriter());
+    Logger.addDataReceiver(new NT4Publisher());
+    // Initialize URCL
+    Logger.registerURCL(URCL.startExternal());
+
+    // Initialize logging data from PDP
+    // LoggedPowerDistribution.getInstance(Constants.powerDistributionCanId,
+    // ModuleType.kRev);
+
+    // Start AdvantageKit logger
+    Logger.start();
+
     alliance = DriverStation.getAlliance();
     yawProvider.zeroYaw();
     splashScreen("1.5");
@@ -72,7 +102,8 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
   public void teleopPeriodic() {
@@ -87,9 +118,9 @@ public class Robot extends TimedRobot {
 
   // @Override
   // public void simulationPeriodic() {
-  //   if (count % 50 == 0) {
-  //     // logf("Count:%d\n", count);
-  //     robotContainer.testLeds();
-  //   }
+  // if (count % 50 == 0) {
+  // // logf("Count:%d\n", count);
+  // robotContainer.testLeds();
+  // }
   // }
 }
