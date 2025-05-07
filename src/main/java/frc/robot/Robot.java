@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.platforms.RobotRunnable;
 import frc.robot.subsystems.YawProvider;
 import java.util.Optional;
 
@@ -41,6 +42,7 @@ import java.util.Optional;
 public class Robot extends TimedRobot {
   public static int count = 1;
   public static RobotContainer robotContainer;
+  public static Optional<RobotRunnable> robotPlatform;
   public static Optional<Alliance> alliance;
   public static boolean debug = true;
   public static Config config = new Config();
@@ -53,6 +55,7 @@ public class Robot extends TimedRobot {
     yawProvider.zeroYaw();
     splashScreen("1.5");
     robotContainer = new RobotContainer();
+    robotPlatform = robotContainer.robot();
   }
 
   @Override
@@ -63,11 +66,17 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    yaw = yawProvider.getYaw();
-    CommandScheduler.getInstance().run();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().robotPeriodic();
+    } else {
+      CommandScheduler.getInstance().run();
+    }
+
     if (count % 20 == 4) { // Update Dashboard every 20 cycles or 200 milliseconds (20 ms * 10)
+      yaw = yawProvider.getYaw();
       SmartDashboard.putNumber("Yaw", round2(yaw));
     }
+
     count++;
   }
 
