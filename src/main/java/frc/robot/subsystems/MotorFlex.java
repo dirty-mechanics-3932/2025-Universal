@@ -17,7 +17,6 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -55,10 +54,8 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
     private double velocityConversionFactor = 1;
     private boolean enableTestMode = false;
     private SparkMaxConfig motorConfig;
-    // private ClosedLoopConfig closedLoopConfig;
-    LedSubsystem leds;
-    AnalogInput analog = new AnalogInput(3);
-
+    private int numberCyclesForDisplay = 1000000;
+    
     public MotorFlex(String name, int id, int followId, boolean logging) {
         this.name = name;
         this.followId = followId;
@@ -166,12 +163,12 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
     }
 
     public void setLogging(boolean value) {
-        logf("Set Flex Logging:%b\n", value);
+        //logf("Set Flex Logging:%b\n", value);
         myLogging = value;
     }
 
     public void setTestMode(boolean value) {
-        logf("Set Flex Test Mode:%b\n", value);
+        //logf("Set Flex Test Mode:%b\n", value);
         enableTestMode = value;
     }
 
@@ -331,9 +328,17 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
         }
     }
 
+    public void setSmartTicks(int numberLoopsForDisplay) {
+        if (numberLoopsForDisplay <= 0)
+          this.numberCyclesForDisplay = Integer.MAX_VALUE;
+        else
+          this.numberCyclesForDisplay = numberLoopsForDisplay;
+      }
+    
+
     @Override
     public void periodic() {
-        if (Robot.count % 1 == 0) {
+        if (Robot.count % numberCyclesForDisplay == 0) {
             SmartDashboard.putNumber("Pos", getPos());
             SmartDashboard.putNumber("Rot", getPos() / positionConversionFactor);
             SmartDashboard.putNumber("Cur", round2(motor.getOutputCurrent()));
@@ -341,15 +346,13 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
             SmartDashboard.putNumber("RPM", round2(getActualVelocity() / velocityConversionFactor / 60));
             SmartDashboard.putString("Mode", mode.toString());
             SmartDashboard.putNumber("Err", getError());
+            SmartDashboard.putNumber("SetP", setP);
             logPeriodic();
             if (enableTestMode)
                 testCases();
         }
     }
 
-    public void setLeds(LedSubsystem leds) {
-        this.leds = leds;
-    }
     enum Modes {
         POSITION, VELOCITY, POSMAGIC, VELMAGIC, SPEED;
 
@@ -373,7 +376,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
             setSpeed(0.0);
             relEncoder.setPosition(0.0);
             mode = mode.next(); // Get the next mode
-            logf("New Test Mode:%s\n", mode);
+            logf("***** Mode:%s for %s\n", mode, name);
         }
         lastStart = start;
         switch (mode) {
@@ -417,13 +420,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
                 setSpeed(value);
                 break;
         }
-        SmartDashboard.putNumber("SetP", setP);
-        leds.setRangeOfColor(0, 4, 0, 0, 0);
-        leds.setRangeOfColor(0, mode.ordinal(), 0, 20, 0);
-        int v = (int) driveController.getHID().getPOV() / 4;
-        leds.setOneLed(6, v,v, v);
-        SmartDashboard.putNumber("Volts", analog.getVoltage());
-        SmartDashboard.putNumber("Value", analog.getValue());
+        RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);    
     }
 
     void testTimes() {
