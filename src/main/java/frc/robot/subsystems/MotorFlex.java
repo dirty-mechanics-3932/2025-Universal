@@ -414,7 +414,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
                 break;
             case SPEED:
                 value = robotContainer.getSpeedFromTriggers();
-                if (value > 0.05)
+                if (Math.abs(value) > 0.05)
                     logf("Set Test speed:%.2f\n", value);
                 setP = value;
                 setSpeed(value);

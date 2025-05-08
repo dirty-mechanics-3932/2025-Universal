@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static frc.robot.Robot.count;
 import static frc.robot.utilities.Util.logf;
 import static frc.robot.utilities.Util.round2;
+
 import static frc.robot.Robot.robotContainer;
 
 import com.ctre.phoenix.ErrorCode;
@@ -441,7 +442,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
       case SPEED:
         value = robotContainer.getSpeedFromTriggers();
         if (Math.abs(value) > 0.05)
-          logf("Set Test speed:%.2f\n", value);
+          logf("Set Test speed:%.2f\n", value);   
         setSpeed(value);
         setP = value;
         break;

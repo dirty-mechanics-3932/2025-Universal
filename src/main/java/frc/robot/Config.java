@@ -62,7 +62,7 @@ public class Config {
 
     // RoboRIO Pin usage
     public final int PWMLedStrip = 9;
-    public final int numberOfLeds = 8;
+    public final static int numberOfLeds = 30;
     public final int DIOTestSwitch = 8;
     public final int DIOTestTrigger = 7;
 
