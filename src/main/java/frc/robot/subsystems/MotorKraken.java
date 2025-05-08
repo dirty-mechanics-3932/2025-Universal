@@ -1,11 +1,17 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Robot.robotContainer;
 import static frc.robot.utilities.Util.logf;
+
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -13,11 +19,19 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
@@ -36,6 +50,20 @@ public class MotorKraken extends SubsystemBase {
   private final VelocityVoltage velocityVoltage = new VelocityVoltage(0).withSlot(1);
   // Start at position 0, use slot 2 for position motion magic
   private final MotionMagicVoltage smartPositionVoltage = new MotionMagicVoltage(0).withSlot(2);
+  // Start at position 0, use slot 2 for position motion magic
+  private final VoltageOut voltage = new VoltageOut(0);
+
+  private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
+  private final SysIdRoutine sysId;
+
+  @AutoLog
+  public static class MotorKrakenInputs {
+    public Angle position = Radians.zero();
+    public AngularVelocity velocity = RadiansPerSecond.zero();
+    public Voltage appliedVolts = Volts.zero();
+    public Current currentSupplyAmps = Amps.zero();
+    public Current currentStatorAmps = Amps.zero();
+  }
 
   public MotorKraken(String name, int id, int followId, boolean logging) {
     this.name = name;
@@ -45,6 +73,15 @@ public class MotorKraken extends SubsystemBase {
     configKraken(motor);
     /* Make sure we start the encoder at positon 0 */
     motor.setPosition(0);
+
+    // Configure SysId
+    sysId = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            null,
+            null,
+            Time.ofBaseUnits(3.5, Seconds),
+            (state) -> Logger.recordOutput(name + "/SysIdState", state.toString())),
+        new SysIdRoutine.Mechanism((voltage) -> setVoltage(voltage), null, this));
   }
 
   private void configKraken(TalonFX motor) {
@@ -122,6 +159,12 @@ public class MotorKraken extends SubsystemBase {
     motor.setControl(velocityVoltage.withVelocity(value));
   }
 
+  private void setVoltage(Voltage value) {
+    /* Use velocity voltage */
+    motor.setControl(voltage.withOutput(value));
+
+  }
+
   public void setSmartTicks(int numberLoopsForDisplay) {
     if (numberLoopsForDisplay <= 0)
       this.numberCyclesForDisplay = Integer.MAX_VALUE;
@@ -149,6 +192,13 @@ public class MotorKraken extends SubsystemBase {
     }
     if (testMode)
       testCases();
+
+    inputs.position = motor.getPosition().getValue();
+    inputs.velocity = motor.getVelocity().getValue();
+    inputs.appliedVolts = motor.getMotorVoltage().getValue();
+    inputs.currentStatorAmps = motor.getStatorCurrent().getValue();
+    inputs.currentSupplyAmps = motor.getSupplyCurrent().getValue();
+    Logger.processInputs(name, inputs);
   }
 
   enum Modes {
@@ -209,7 +259,7 @@ public class MotorKraken extends SubsystemBase {
         break;
       case SPEED:
         value = robotContainer.getSpeedFromTriggers();
-        if (value > 0.05) {
+        if (Math.abs(value) > 0.05) {
           if (setP != value)
             logf("Set Test speed:%.2f\n", value);
           setP = value;
@@ -218,5 +268,19 @@ public class MotorKraken extends SubsystemBase {
         break;
     }
     RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
+  }
+
+  /** Returns a command to run a quasistatic test in the specified direction. */
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return run(() -> setSpeed(0.0))
+        .withTimeout(0.5)
+        .andThen(sysId.quasistatic(direction));
+  }
+
+  /** Returns a command to run a dynamic test in the specified direction. */
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return run(() -> setSpeed(0.0))
+        .withTimeout(0.5)
+        .andThen(sysId.dynamic(direction).withTimeout(1));
   }
 }
