@@ -123,16 +123,20 @@ public class RobotContainer {
         break;
       case BlondeMini:
         // new DrivetrainSRX(driveHID);
-        motorKraken = new MotorKraken("testSysid", 25, -1, true);
-        boolean testSmartMaxBlonde = true;
-        MotorSparkMax motor = new MotorSparkMax("TestMax", 20, -1, false, false);
-        if (testSmartMaxBlonde) {
-          motor.setLogging(true);
-          motor.setTestMode(true);
-        } else {
-          Command blondeMove = Commands.run(() -> motor.setSpeed(getSpeedFromTriggers()), motor);
-          blondeMove.ignoringDisable(true).schedule();
-        }
+//<<<<<<< HEAD
+        //motorKraken = new MotorKraken("testSysid", 25, -1,true);
+        // boolean testSmartMaxBlonde = true;
+        motorSparkMax = new MotorSparkMax("TestMax", 20, -1, false, false);
+        // if (testSmartMaxBlonde) {
+        //   motorSparkMax.setLogging(true);
+        //   motorSparkMax.setTestMode(true);
+        // } else {
+        //   Command blondeMove = Commands.run(() -> motorSparkMax.setSpeed(getSpeedFromTriggers()), motorSparkMax);
+        //   blondeMove.ignoringDisable(true).schedule();
+        // }
+//=======
+      
+//>>>>>>> ecc2b7e32c26e7de0f8c747d2b1e5c72cb7c15b3
         break;
       case DarrylMini:
         new DrivetrainSRX(driveHID);
@@ -312,6 +316,15 @@ public class RobotContainer {
       driveController.b().whileTrue(motorKraken.sysIdDynamic(Direction.kReverse));
       driveController.x().whileTrue(motorKraken.sysIdQuasistatic(Direction.kForward));
       driveController.y().whileTrue(motorKraken.sysIdQuasistatic(Direction.kReverse));
+    }
+    if (motorSparkMax != null) {
+      driveController.a().whileTrue(motorSparkMax.sysIdDynamic(Direction.kForward));
+      
+      driveController.b().whileTrue(motorSparkMax.sysIdDynamic(Direction.kReverse));
+      
+      driveController.x().whileTrue(motorSparkMax.sysIdQuasistatic(Direction.kForward));
+      
+      driveController.y().whileTrue(motorSparkMax.sysIdQuasistatic(Direction.kReverse));
     }
   }
 

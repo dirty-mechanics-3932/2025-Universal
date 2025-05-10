@@ -1,14 +1,31 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Robot.robotContainer;
 import static frc.robot.utilities.Util.logf;
 import static frc.robot.utilities.Util.round2;
-
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Seconds;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.AutoLog;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.*;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -16,13 +33,18 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+
+import com.revrobotics.spark.SparkRelativeEncoder;
 
 /**
  * SPARK MAX controllers are initialized over CAN by constructing a SparkMax
@@ -40,6 +62,8 @@ import frc.robot.RobotContainer;
 
 public class MotorSparkMax extends SubsystemBase {
     private SparkMax motor;
+    private SparkBase motorS;
+    private SparkRelativeEncoder encoder;
     private SparkMax followMotor;
     private String name;
     private int followId;
@@ -56,12 +80,23 @@ public class MotorSparkMax extends SubsystemBase {
     private double velocityConversionFactor = 1.0;
     private boolean testMode = false;
     private int numberCyclesForDisplay = 1000000;
+    private final SysIdRoutine sysId;
+    private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
+    // private final VoltageOut voltage = new VoltageOut(0);
 
     public MotorSparkMax(String name, int id, int followId, boolean brakeMode, boolean invert) {
         this.name = name;
         this.followId = followId;
         this.brakeMode = brakeMode;
         myMotorSpark(name, id, followId, false);
+
+        sysId = new SysIdRoutine(
+                new SysIdRoutine.Config(
+                        null,
+                        null,
+                        Time.ofBaseUnits(3.5, Seconds),
+                        (state) -> Logger.recordOutput(name + "/SysIdState", state.toString())),
+                new SysIdRoutine.Mechanism((voltage) -> setVoltage(voltage), null, this));
     }
 
     void myMotorSpark(String name, int id, int followId, boolean logging) {
@@ -70,6 +105,10 @@ public class MotorSparkMax extends SubsystemBase {
         myLogging = logging;
         logf("Start Spark Max %s id:%d\n", name, id);
         motor = new SparkMax(id, MotorType.kBrushless);
+        {
+
+        }
+        ;
         setConfig(motor);
         if (followId > 0) {
             followMotor = new SparkMax(followId, MotorType.kBrushless);
@@ -225,7 +264,7 @@ public class MotorSparkMax extends SubsystemBase {
     }
 
     public double getMotorVoltage() {
-        return motor.getAppliedOutput();
+        return motor.getAppliedOutput() * motor.getBusVoltage();
     }
 
     public double getMotorCurrent() {
@@ -284,8 +323,17 @@ public class MotorSparkMax extends SubsystemBase {
         if (Robot.count % 10 == 0) {
             logPeriodic();
         }
-        if (testMode)
+        if (testMode) {
             testCases();
+        }
+
+        inputs.position = Rotations.of(getPos());
+        inputs.velocity = RPM.of(getSpeed());
+        inputs.appliedVolts = Volts.of(getMotorVoltage());
+        inputs.currentStatorAmps = Amps.of(getMotorCurrent());
+        inputs.currentSupplyAmps = Amps.of(getMotorCurrent());
+        Logger.processInputs(name, inputs);
+
     }
 
     void testTimes() {
@@ -326,6 +374,11 @@ public class MotorSparkMax extends SubsystemBase {
             this.numberCyclesForDisplay = Integer.MAX_VALUE;
         else
             this.numberCyclesForDisplay = numberLoopsForDisplay;
+    }
+
+    private void setVoltage(Voltage value) {
+        /* Use velocity voltage */
+        motor.setVoltage(value);
     }
 
     enum Modes {
@@ -405,5 +458,18 @@ public class MotorSparkMax extends SubsystemBase {
         }
         RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
         SmartDashboard.putNumber("SetP", setPoint);
+    }
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return run(() -> setSpeed(0.0))
+                .withTimeout(0.5)
+                .andThen(sysId.quasistatic(direction));
+    }
+
+    /** Returns a command to run a dynamic test in the specified direction. */
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return run(() -> setSpeed(0.0))
+                .withTimeout(0.5)
+                .andThen(sysId.dynamic(direction).withTimeout(1));
     }
 }
