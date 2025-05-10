@@ -47,7 +47,7 @@ import frc.robot.subsystems.TestTriggers;
  * declared here.
  */
 public class RobotContainer {
-  private Optional<RobotRunnable> runnableRobot;
+  private Optional<RobotRunnable> runnableRobot = Optional.empty();
   public static final CommandXboxController driveController = new CommandXboxController(2);
   private static final XboxController driveHID = driveController.getHID();
 
