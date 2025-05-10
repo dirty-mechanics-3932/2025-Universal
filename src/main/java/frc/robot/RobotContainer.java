@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Config.RobotType;
+import frc.robot.platforms.DarrylMini;
 import frc.robot.platforms.BlondeMini;
 import frc.robot.platforms.MiniMini;
 import frc.robot.platforms.RobotRunnable;
@@ -126,10 +127,7 @@ public class RobotContainer {
        runnableRobot = Optional.of(new BlondeMini(driveHID));
         break;
       case DarrylMini:
-        new DrivetrainSRX(driveHID);
-        MotorSRX dmotor = new MotorSRX("DarrylSRX", 10, -1, true);
-        Command darrylMoveBack = Commands.run(() -> dmotor.setSpeed(getSpeedFromTriggers()), dmotor);
-        darrylMoveBack.ignoringDisable(true).schedule();
+        runnableRobot = Optional.of(new DarrylMini());
         break;
       case MiniMini:
         runnableRobot = Optional.of(new MiniMini(3, 10, driveController));
