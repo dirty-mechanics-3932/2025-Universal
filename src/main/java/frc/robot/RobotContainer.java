@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Config.RobotType;
 import frc.robot.platforms.BlondeMini;
 import frc.robot.platforms.MiniMini;
+import frc.robot.platforms.ParadeSrxDriveRobots;
 import frc.robot.platforms.RobotRunnable;
 import frc.robot.subsystems.DrivetrainJaguar;
 import frc.robot.subsystems.DrivetrainSRX;
@@ -157,12 +158,14 @@ public class RobotContainer {
         leftxToLeds.ignoringDisable(true).schedule();
         break;
       case Squidward:
-        drivetrainSRX = new DrivetrainSRX(driveHID);
+      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID));
+      
         // Uses Talon SRX for drive train())
         break;
       case Kevin: // Ginger Bread Robot
         // Uses Talon SRX for drive train
-        drivetrainSRX = new DrivetrainSRX(driveHID);
+       
+      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID));
         break;
       case Wooly: // Big ball shooter
         // Uses Jaguars for drive train and shooter
