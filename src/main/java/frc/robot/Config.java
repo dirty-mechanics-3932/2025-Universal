@@ -10,12 +10,12 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class Config {
     public enum RobotType {
-        MiniKeith, BlondeMini, Squidward, Kevin, Wooly, Mando, Simulation, DarrylMini, MiniMini, Sibling2025
+        MiniKeith, BlondeMini, Squidward, Kevin, Wooly, Mando, Simulation, DarrylMini, MiniMini, Sibling2025, MiniIsaac
     };
 
     // Type of Robot
 
-    public static RobotType robotType = RobotType.MiniKeith;
+    public static RobotType robotType = RobotType.MiniIsaac;
 
     // Pneumatic Control Modules Parameters
     public int pcmHubID = -1;

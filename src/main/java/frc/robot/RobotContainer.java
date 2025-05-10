@@ -4,17 +4,27 @@ package frc.robot;
 import static frc.robot.utilities.Util.logf;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.sim.SparkFlexExternalEncoderSim;
+import com.revrobotics.spark.SparkFlexExternalEncoder;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -28,6 +38,7 @@ import frc.robot.subsystems.MotorFlex;
 import frc.robot.subsystems.MotorKraken;
 import frc.robot.subsystems.MotorSRX;
 import frc.robot.subsystems.MotorSparkMax;
+import frc.robot.subsystems.NeoMotor;
 import frc.robot.subsystems.PID;
 import frc.robot.subsystems.TestTriggers;
 
@@ -42,11 +53,14 @@ import frc.robot.subsystems.TestTriggers;
  * declared here.
  */
 public class RobotContainer {
+  public SlewRateLimiter neoMotorSlewRateLimiter = new SlewRateLimiter(.5);
   public static final CommandXboxController driveController = new CommandXboxController(2);
   private static final XboxController driveHID = driveController.getHID();
 
   public static LedSubsystem leds = new LedSubsystem();
   public DrivetrainSRX drivetrainSRX;
+
+  XboxController controller = new XboxController(2);
 
   private TestTriggers triggers = new TestTriggers();
   private CANcoder canCoder;
@@ -71,7 +85,6 @@ public class RobotContainer {
   }
 
   private Motors motors = Motors.FLEX; // Set default motor for testing
-
   private void setMotorForTest() {
     testFlex = false;
     testSmartMax = false;
@@ -112,6 +125,12 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    
+    double kP;
+    double kI;
+    double kD;
+    PIDController pidNeo = new PIDController(kP, kI, kD);
+
     // Set the default Robot Mode to Cube
     switch (Config.robotType) {
       case Simulation:
@@ -170,15 +189,15 @@ public class RobotContainer {
         motorSRX = new MotorSRX("SRX", 14, 0, true);
         motorSRX.setupForTestCasesRedMotor();
         setMotorForTest();
-       // Code to display CANCoder value
+        // Code to display CANCoder value
         canCoder = new CANcoder(20);
         Command miniCancoder = Commands.run(
             () -> SmartDashboard.putNumber("CanCo", canCoder.getPosition().getValueAsDouble()));
         miniCancoder.ignoringDisable(true).schedule();
-         
+
         // Code to have leds reflect value of LeftX
         Command leftxToLeds = Commands.run(
-          () -> setLedsLeftX());
+            () -> setLedsLeftX());
         leftxToLeds.ignoringDisable(true).schedule();
         break;
       case Squidward:
@@ -203,6 +222,22 @@ public class RobotContainer {
         break;
       case Sibling2025:
         new DrivetrainTestSwerve(driveHID);
+        break;
+      case MiniIsaac:
+        MotorFlex neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
+        MotorSRX RedMotor = new MotorSRX("RedMotor", 10, -1, true);
+        SparkMaxConfig motorConfig = new SparkMaxConfig();
+
+        Command turnRedMotor = Commands.run(() -> RedMotor.setSpeed(getSpeedFromTriggers()), talonSRX);
+        Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(neoMotorSlewRateLimiter.calculate(driveController.getLeftX())), motorFlex); 
+        
+        turnRedMotor.ignoringDisable(true).schedule();
+        turnNeoMotor.ignoringDisable(true).schedule();
+         
+        motorConfig.feedbackSensor().closedLoop()
+          .p(0)
+          .i(0)
+          .d(0);
         break;
     }
     logf("Finished Creating RobotContainer\n");
@@ -229,6 +264,8 @@ public class RobotContainer {
     return 0.0;
   }
 
+  
+
   // Play with string encoder
   AnalogInput analog = new AnalogInput(3);
 
@@ -240,11 +277,11 @@ public class RobotContainer {
   }
 
   public void setLedsLeftX() {
-      int num = Config.numberOfLeds - 6;
-      double value = RobotContainer.driveController.getLeftX();
-      if (value < 0.0)
-        value = 0.0;
-      leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
+    int num = Config.numberOfLeds - 6;
+    double value = RobotContainer.driveController.getLeftX();
+    if (value < 0.0)
+      value = 0.0;
+    leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
   }
 
   // Command h = Commands.run(() -> logf("Hit\f"));
@@ -282,15 +319,15 @@ public class RobotContainer {
   }
 
   // Command leftxToLeds = new InstantCommand(
-  //     new Runnable() {
-  //       public void run() {
-  //         int num = Config.numberOfLeds - 6;
-  //         double value = RobotContainer.driveController.getLeftX();
-  //         if (value < 0.0)
-  //           value = 0.0;
-  //         leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
-  //       }
-  //    });
+  // new Runnable() {
+  // public void run() {
+  // int num = Config.numberOfLeds - 6;
+  // double value = RobotContainer.driveController.getLeftX();
+  // if (value < 0.0)
+  // value = 0.0;
+  // leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
+  // }
+  // });
 
   Command zeroYawCommand = new InstantCommand(
       new Runnable() {
@@ -298,7 +335,6 @@ public class RobotContainer {
           Robot.yawProvider.zeroYaw();
         }
       });
-
 
   // Trigger tr = new Trigger(triggers::getSwitch);
 
