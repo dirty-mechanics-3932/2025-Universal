@@ -15,7 +15,7 @@ public class Config {
 
     // Type of Robot
 
-    public static RobotType robotType = RobotType.BlondeMini;
+    public static RobotType robotType = RobotType.DarrylMini;
 
     // Pneumatic Control Modules Parameters
     public int pcmHubID = -1;
