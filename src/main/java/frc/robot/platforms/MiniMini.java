@@ -41,6 +41,7 @@ public class MiniMini implements RobotRunnable {
 //         redMotor.setSpeed(driveController.getLeftTriggerAxis()), redMotor);
 //         Command neoMoveCmd = Commands.run(() ->
 //         flexMotor.setSpeed(driveController.getRightTriggerAxis()), flexMotor);
+One change
 //         new ScheduleCommand(Commands.parallel(redMoveCmd,
 //         neoMoveCmd).ignoringDisable(true)).schedule();
 //         Command miniMove = Commands.run(() ->
