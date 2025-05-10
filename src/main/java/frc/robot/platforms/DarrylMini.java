@@ -9,19 +9,21 @@ import frc.robot.subsystems.MotorSRX;
 
 public class DarrylMini implements RobotRunnable {
     
-    MotorSRX dmotor;
-    final XboxController driveHID;
-    final CommandXboxController driveController;
+    MotorSRX m_dmotor;
+    final XboxController m_driveHID;
+    final CommandXboxController m_driveController;
+    
     public DarrylMini() {
         
-        driveController = new CommandXboxController(2);
-        driveHID = driveController.getHID();
-        dmotor = new MotorSRX("DarrylSRX", 10, -1, true);
-        new DrivetrainSRX(driveHID);
+        m_driveController = new CommandXboxController(2);
+        m_driveHID = m_driveController.getHID();
+        m_dmotor = new MotorSRX("DarrylSRX", 10, -1, true);
+        new DrivetrainSRX(m_driveHID);
     }
+    
     private double getSpeedFromTriggers() {
-        double leftValue = driveController.getLeftTriggerAxis();
-        double rightValue = driveController.getRightTriggerAxis();
+        double leftValue = m_driveController.getLeftTriggerAxis();
+        double rightValue = m_driveController.getRightTriggerAxis();
         if (leftValue > 0.05) {
           return leftValue;
         }
@@ -30,14 +32,15 @@ public class DarrylMini implements RobotRunnable {
         }
         return 0.0;
       }
+    
     @Override
     public String robotName() {
-        return RobotRunnable.super.robotName();
+        return "DarrylMini";
     }
+
     @Override
     public void robotInit() {
-        Command darrylMoveBack = Commands.run(() -> dmotor.setSpeed(getSpeedFromTriggers()), dmotor);
+        Command darrylMoveBack = Commands.run(() -> m_dmotor.setSpeed(getSpeedFromTriggers()), m_dmotor);
         darrylMoveBack.ignoringDisable(true).schedule();
-        RobotRunnable.super.robotInit();
     }
 }
