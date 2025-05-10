@@ -156,14 +156,14 @@ public class RobotContainer {
         leftxToLeds.ignoringDisable(true).schedule();
         break;
       case Squidward:
-      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID));
+      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
       
         // Uses Talon SRX for drive train())
         break;
       case Kevin: // Ginger Bread Robot
         // Uses Talon SRX for drive train
        
-      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID));
+      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
         break;
       case Wooly: // Big ball shooter
         // Uses Jaguars for drive train and shooter

@@ -16,6 +16,10 @@ public class BlondeMini implements RobotRunnable {
         drivetrainSRX = new DrivetrainSRX(hid); 
         this.hid = hid;
     }
+    @Override
+    public String robotName() {
+        return "BlondeMini";
+    }
 
     @Override
     public void robotInit() {
