@@ -143,29 +143,6 @@ public class RobotContainer {
       case MiniMini:
         runnableRobot = Optional.of(new MiniMini(3, 10, driveController));
 
-//         MotorSRX redMotor = new MotorSRX("RedMotor", 10, -1, true);
-//         PID positionPID = new PID("Pos", .08, 0, 0, 0, 0, -1, 1, true);
-//         PID velocityPID = new PID("Vel", .005, 0, 0, 0, 1.5, -1, 1, true);
-//         // Motion Magic messes things up positionPID.setMotionMagicSRX(.5, 2.0);
-//         redMotor.setPositionPID(positionPID, 0, FeedbackDevice.QuadEncoder); // set pid for SRX
-//         redMotor.setVelocityPID(velocityPID, 1, FeedbackDevice.QuadEncoder);
-
-//         MotorFlex flexMotor = new MotorFlex("FlexMotor", 3, -1, true);
-//         flexMotor.setLogging(true);
-//         flexMotor.setTestMode(true);
-//         redMotor.setUpForTestCases(leds);
-//         redMotor.setLogging(true);
-//         redMotor.setEncoderTicksPerRev(2048);
-//         Command redMoveCmd = Commands.run(() ->
-//         redMotor.setSpeed(driveController.getLeftTriggerAxis()), redMotor);
-//         Command neoMoveCmd = Commands.run(() ->
-//         flexMotor.setSpeed(driveController.getRightTriggerAxis()), flexMotor);
-//         new ScheduleCommand(Commands.parallel(redMoveCmd,
-//         neoMoveCmd).ignoringDisable(true)).schedule();
-//         Command miniMove = Commands.run(() ->
-//         flexMotor.setSpeed(driveController.getLeftTriggerAxis()), flexMotor);
-//         driveController.start().onTrue(miniMove);
-//         new ScheduleCommand(miniMove);
         break;
       case MiniKeith: // Test mini
         // Use Talon SRX for drive train

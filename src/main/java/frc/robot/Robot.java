@@ -93,9 +93,8 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     if (robotPlatform.isPresent()) {
       robotPlatform.get().robotPeriodic();
-    } else {
-      CommandScheduler.getInstance().run();
     }
+    CommandScheduler.getInstance().run();
 
     if (count % 20 == 4) { // Update Dashboard every 20 cycles or 200 milliseconds (20 ms * 10)
       yaw = yawProvider.getYaw();

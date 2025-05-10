@@ -11,7 +11,7 @@ import frc.robot.subsystems.MotorFlex;
 import frc.robot.subsystems.MotorSRX;
 import frc.robot.subsystems.PID;
 
-public class MiniMini extends RobotPlatformBase implements RobotRunnable {
+public class MiniMini implements RobotRunnable {
     private MotorSRX m_redMotor;
     private MotorFlex m_flexMotor;
     private CommandXboxController m_driveHID;
@@ -30,6 +30,23 @@ public class MiniMini extends RobotPlatformBase implements RobotRunnable {
         // redMotor.setUpForTestCases(leds);
         // redMotor.setLogging(true);
         // redMotor.setEncoderTicksPerRev(2048);
+
+//         MotorFlex flexMotor = new MotorFlex("FlexMotor", 3, -1, true);
+//         flexMotor.setLogging(true);
+//         flexMotor.setTestMode(true);
+//         redMotor.setUpForTestCases(leds);
+//         redMotor.setLogging(true);
+//         redMotor.setEncoderTicksPerRev(2048);
+//         Command redMoveCmd = Commands.run(() ->
+//         redMotor.setSpeed(driveController.getLeftTriggerAxis()), redMotor);
+//         Command neoMoveCmd = Commands.run(() ->
+//         flexMotor.setSpeed(driveController.getRightTriggerAxis()), flexMotor);
+//         new ScheduleCommand(Commands.parallel(redMoveCmd,
+//         neoMoveCmd).ignoringDisable(true)).schedule();
+//         Command miniMove = Commands.run(() ->
+//         flexMotor.setSpeed(driveController.getLeftTriggerAxis()), flexMotor);
+//         driveController.start().onTrue(miniMove);
+//         new ScheduleCommand(miniMove);
     }
 
     @Override

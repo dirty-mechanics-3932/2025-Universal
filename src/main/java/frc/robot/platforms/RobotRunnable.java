@@ -1,28 +1,34 @@
 package frc.robot.platforms;
 
+import frc.robot.utilities.Util;
+
 public interface RobotRunnable {
-    public void robotInit();
-    public void robotPeriodic();
+    public default void log(String s) { Util.logf("(%s) %s", robotName(), s); }
+    public default void logf(String pattern, Object... arguments) { Util.logf("(%s) " + pattern, robotName(), arguments); }
 
-    public void driverStationConnected();
+    public default String robotName() { return "robotname-undefined"; }
 
-    public void simulationInit();
-    public void simulationPeriodic();
+    public default void robotInit() { log("robotInit unimplemented"); };
+    public default void robotPeriodic() { log("robotPeriodic unimplemented"); };
 
-    public void disabledInit();
-    public void disabledPeriodic();
-    public void disabledExit();
+    public default void driverStationConnected() { log("driverStationConnected unimplemented"); };
 
-    public void autonomousInit();
-    public void autonomousPeriodic();
-    public void autonomousExit();
+    public default void simulationInit() { log("simulationInit unimplemented"); };
+    public default void simulationPeriodic() { log("simulationPeriodic unimplemented"); };
 
-    public void teleopInit();
-    public void teleopPeriodic();
-    public void teleopExit();
+    public default void disabledInit() { log("disabledInit unimplemented"); };
+    public default void disabledPeriodic() { log("disabledPeriodic unimplemented"); };
+    public default void disabledExit() { log("disabledExit unimplemented"); };
 
-    public void testInit();
-    public void testPeriodic();
-    public void testExit();
-    
+    public default void autonomousInit() { log("autonomousInit unimplemented"); };
+    public default void autonomousPeriodic() { log("autonomousPeriodic unimplemented"); };
+    public default void autonomousExit() { log("autonomousExit unimplemented"); };
+
+    public default void teleopInit() { log("teleopInit unimplemented"); };
+    public default void teleopPeriodic() { log("teleopPeriodic unimplemented"); };
+    public default void teleopExit() { log("teleopExit unimplemented"); };
+
+    public default void testInit() { log("testInit unimplemented"); };
+    public default void testPeriodic() { log("testPeriodic unimplemented"); };
+    public default void testExit() { log("testExit unimplemented"); };
 }
