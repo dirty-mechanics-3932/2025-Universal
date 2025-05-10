@@ -79,12 +79,38 @@ public class Robot extends LoggedRobot {
     yawProvider.zeroYaw();
     splashScreen("1.5");
     robotContainer = new RobotContainer();
+
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().robotInit();
+    }
   }
 
   @Override
   public void teleopInit() {
     logf("Start Teleop\n");
     System.gc();
+
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().teleopInit();
+    }
+  }
+
+  @Override
+  public void testInit() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().testInit();
+    }
+  }
+
+  @Override
+  public void autonomousInit() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().testInit();
+    }
   }
 
   @Override
@@ -104,10 +130,6 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void disabledPeriodic() {
-  }
-
-  @Override
   public void teleopPeriodic() {
     if (count % 100 == 0) {
       long mem = Runtime.getRuntime().freeMemory();
@@ -116,7 +138,54 @@ public class Robot extends LoggedRobot {
     if (count % 50 == 0) {
       // System.gc();
     }
+
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().teleopPeriodic();
+    }
   }
+
+  @Override
+  public void autonomousPeriodic() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().autonomousPeriodic();
+    }
+  }
+
+  @Override
+  public void disabledPeriodic() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().disabledPeriodic();
+    }
+  }
+
+  @Override
+  public void disabledInit() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().disabledInit();
+    }
+  }
+
+  @Override
+  public void autonomousExit() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().autonomousExit();
+    }
+  }
+
+  @Override
+  public void disabledExit() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().disabledExit();
+    }
+  }
+
+  
 
   // @Override
   // public void simulationPeriodic() {

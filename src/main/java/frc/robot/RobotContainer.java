@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Config.RobotType;
+import frc.robot.platforms.BlondeMini;
 import frc.robot.platforms.MiniMini;
 import frc.robot.platforms.RobotRunnable;
 import frc.robot.subsystems.DrivetrainJaguar;
@@ -122,21 +123,7 @@ public class RobotContainer {
       case Simulation:
         break;
       case BlondeMini:
-        // new DrivetrainSRX(driveHID);
-//<<<<<<< HEAD
-        //motorKraken = new MotorKraken("testSysid", 25, -1,true);
-        // boolean testSmartMaxBlonde = true;
-        motorSparkMax = new MotorSparkMax("TestMax", 20, -1, false, false);
-        // if (testSmartMaxBlonde) {
-        //   motorSparkMax.setLogging(true);
-        //   motorSparkMax.setTestMode(true);
-        // } else {
-        //   Command blondeMove = Commands.run(() -> motorSparkMax.setSpeed(getSpeedFromTriggers()), motorSparkMax);
-        //   blondeMove.ignoringDisable(true).schedule();
-        // }
-//=======
-      
-//>>>>>>> ecc2b7e32c26e7de0f8c747d2b1e5c72cb7c15b3
+       runnableRobot = Optional.of(new BlondeMini(driveHID));
         break;
       case DarrylMini:
         new DrivetrainSRX(driveHID);
