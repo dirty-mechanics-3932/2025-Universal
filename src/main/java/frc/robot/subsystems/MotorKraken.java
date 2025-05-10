@@ -165,7 +165,7 @@ public class MotorKraken extends SubsystemBase {
     motor.setControl(voltage.withOutput(value));
 
   }
-  
+
   public void setSmartTicks(int numberLoopsForDisplay) {
     if (numberLoopsForDisplay <= 0)
       this.numberCyclesForDisplay = Integer.MAX_VALUE;
@@ -191,15 +191,16 @@ public class MotorKraken extends SubsystemBase {
     if (Math.abs(velocity) > 0.05 && myLogging && Robot.count % 20 == 0) {
       logf("%s vel:%.2f RPM:%.2f cur:%.2f pos:%.2f err:%.2f\n", name, velocity, velocity * 60.0, current, pos, err);
     }
-    if (testMode)
+    if (testMode) {
       testCases();
+    }
 
-      inputs.position = motor.getPosition().getValue();
-      inputs.velocity = motor.getVelocity().getValue();
-      inputs.appliedVolts = motor.getMotorVoltage().getValue();
-      inputs.currentStatorAmps = motor.getStatorCurrent().getValue();
-      inputs.currentSupplyAmps = motor.getSupplyCurrent().getValue();
-      Logger.processInputs(name, inputs);
+    inputs.position = motor.getPosition().getValue();
+    inputs.velocity = motor.getVelocity().getValue();
+    inputs.appliedVolts = motor.getMotorVoltage().getValue();
+    inputs.currentStatorAmps = motor.getStatorCurrent().getValue();
+    inputs.currentSupplyAmps = motor.getSupplyCurrent().getValue();
+    Logger.processInputs(name, inputs);
   }
 
   enum Modes {
