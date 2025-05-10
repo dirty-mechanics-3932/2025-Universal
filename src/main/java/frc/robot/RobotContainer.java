@@ -3,6 +3,8 @@ package frc.robot;
 // import static frc.robot.Robot.yaw;
 import static frc.robot.utilities.Util.logf;
 
+import java.util.Optional;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix6.hardware.CANcoder;
 
@@ -19,6 +21,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Config.RobotType;
+import frc.robot.platforms.MiniMini;
+import frc.robot.platforms.RobotRunnable;
 import frc.robot.subsystems.DrivetrainJaguar;
 import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.DrivetrainSpark;
@@ -42,6 +46,7 @@ import frc.robot.subsystems.TestTriggers;
  * declared here.
  */
 public class RobotContainer {
+  private Optional<RobotRunnable> runnableRobot;
   public static final CommandXboxController driveController = new CommandXboxController(2);
   private static final XboxController driveHID = driveController.getHID();
 
@@ -95,10 +100,10 @@ public class RobotContainer {
     }
     motorFlex.setTestMode(testFlex);
     motorFlex.setLogging(testFlex);
-    motorFlex.setSmartTicks(testFlex? 2 : 0);
+    motorFlex.setSmartTicks(testFlex ? 2 : 0);
     motorSparkMax.setTestMode(testSmartMax);
     motorSparkMax.setLogging(testSmartMax);
-    motorSparkMax.setSmartTicks(testSmartMax? 2 : 0);
+    motorSparkMax.setSmartTicks(testSmartMax ? 2 : 0);
     motorKraken.setTestMode(testKraken);
     motorKraken.setLogging(testKraken);
     motorKraken.setSmartTicks(testKraken ? 1 : 0);
@@ -118,6 +123,7 @@ public class RobotContainer {
         break;
       case BlondeMini:
         // new DrivetrainSRX(driveHID);
+//<<<<<<< HEAD
         //motorKraken = new MotorKraken("testSysid", 25, -1,true);
         // boolean testSmartMaxBlonde = true;
         motorSparkMax = new MotorSparkMax("TestMax", 20, -1, false, false);
@@ -128,6 +134,9 @@ public class RobotContainer {
         //   Command blondeMove = Commands.run(() -> motorSparkMax.setSpeed(getSpeedFromTriggers()), motorSparkMax);
         //   blondeMove.ignoringDisable(true).schedule();
         // }
+//=======
+      
+//>>>>>>> ecc2b7e32c26e7de0f8c747d2b1e5c72cb7c15b3
         break;
       case DarrylMini:
         new DrivetrainSRX(driveHID);
@@ -136,29 +145,31 @@ public class RobotContainer {
         darrylMoveBack.ignoringDisable(true).schedule();
         break;
       case MiniMini:
-        MotorSRX redMotor = new MotorSRX("RedMotor", 10, -1, true);
-        PID positionPID = new PID("Pos", .08, 0, 0, 0, 0, -1, 1, true);
-        PID velocityPID = new PID("Vel", .005, 0, 0, 0, 1.5, -1, 1, true);
-        // Motion Magic messes things up positionPID.setMotionMagicSRX(.5, 2.0);
-        redMotor.setPositionPID(positionPID, 0, FeedbackDevice.QuadEncoder); // set pid for SRX
-        redMotor.setVelocityPID(velocityPID, 1, FeedbackDevice.QuadEncoder);
-    
-        MotorFlex flexMotor = new MotorFlex("FlexMotor", 3, -1, true);
-        flexMotor.setLogging(true);
-        flexMotor.setTestMode(true);
-        // redMotor.setUpForTestCases(leds);
-        // redMotor.setLogging(true);
-        // redMotor.setEncoderTicksPerRev(2048);
-        // Command redMoveCmd = Commands.run(() ->
-        // redMotor.setSpeed(driveController.getLeftTriggerAxis()), redMotor);
-        // Command neoMoveCmd = Commands.run(() ->
-        // flexMotor.setSpeed(driveController.getRightTriggerAxis()), flexMotor);
-        // new ScheduleCommand(Commands.parallel(redMoveCmd,
-        // neoMoveCmd).ignoringDisable(true)).schedule();
-        // Command miniMove = Commands.run(() ->
-        // flexMotor.setSpeed(driveController.getLeftTriggerAxis()), flexMotor);
-        // driveController.start().onTrue(miniMove);
-        // new ScheduleCommand(miniMove);
+        runnableRobot = Optional.of(new MiniMini(3, 10, driveController));
+
+//         MotorSRX redMotor = new MotorSRX("RedMotor", 10, -1, true);
+//         PID positionPID = new PID("Pos", .08, 0, 0, 0, 0, -1, 1, true);
+//         PID velocityPID = new PID("Vel", .005, 0, 0, 0, 1.5, -1, 1, true);
+//         // Motion Magic messes things up positionPID.setMotionMagicSRX(.5, 2.0);
+//         redMotor.setPositionPID(positionPID, 0, FeedbackDevice.QuadEncoder); // set pid for SRX
+//         redMotor.setVelocityPID(velocityPID, 1, FeedbackDevice.QuadEncoder);
+
+//         MotorFlex flexMotor = new MotorFlex("FlexMotor", 3, -1, true);
+//         flexMotor.setLogging(true);
+//         flexMotor.setTestMode(true);
+//         redMotor.setUpForTestCases(leds);
+//         redMotor.setLogging(true);
+//         redMotor.setEncoderTicksPerRev(2048);
+//         Command redMoveCmd = Commands.run(() ->
+//         redMotor.setSpeed(driveController.getLeftTriggerAxis()), redMotor);
+//         Command neoMoveCmd = Commands.run(() ->
+//         flexMotor.setSpeed(driveController.getRightTriggerAxis()), flexMotor);
+//         new ScheduleCommand(Commands.parallel(redMoveCmd,
+//         neoMoveCmd).ignoringDisable(true)).schedule();
+//         Command miniMove = Commands.run(() ->
+//         flexMotor.setSpeed(driveController.getLeftTriggerAxis()), flexMotor);
+//         driveController.start().onTrue(miniMove);
+//         new ScheduleCommand(miniMove);
         break;
       case MiniKeith: // Test mini
         // Use Talon SRX for drive train
@@ -170,13 +181,16 @@ public class RobotContainer {
         motorSRX = new MotorSRX("SRX", 14, 0, true);
         motorSRX.setupForTestCasesRedMotor();
         setMotorForTest();
-        // Command miniSRXMove = Commands.run(() ->
-        // motor.setSpeed(getSpeedFromTriggers()), motor);
+       // Code to display CANCoder value
         canCoder = new CANcoder(20);
         Command miniCancoder = Commands.run(
             () -> SmartDashboard.putNumber("CanCo", canCoder.getPosition().getValueAsDouble()));
         miniCancoder.ignoringDisable(true).schedule();
-        // driveController.back().onTrue(miniCancoder);
+         
+        // Code to have leds reflect value of LeftX
+        Command leftxToLeds = Commands.run(
+          () -> setLedsLeftX());
+        leftxToLeds.ignoringDisable(true).schedule();
         break;
       case Squidward:
         drivetrainSRX = new DrivetrainSRX(driveHID);
@@ -236,6 +250,14 @@ public class RobotContainer {
     SmartDashboard.putNumber("Value", analog.getValue());
   }
 
+  public void setLedsLeftX() {
+      int num = Config.numberOfLeds - 6;
+      double value = RobotContainer.driveController.getLeftX();
+      if (value < 0.0)
+        value = 0.0;
+      leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
+  }
+
   // Command h = Commands.run(() -> logf("Hit\f"));
 
   Command hit = new InstantCommand(
@@ -248,25 +270,6 @@ public class RobotContainer {
   public double squareWithSign(double v) {
     return (v < 0) ? -(v * v) : (v * v);
   }
-
-  // private void configureButtonBindings() {
-  //   driveController.x().onTrue(
-  //       new InstantCommand(
-  //           new Runnable() {
-  //             public void run() {
-  //               setMotorForTest();
-  //             }
-  //           }));
-  //   driveController.back()
-  //       .whileTrue(
-  //           new InstantCommand(
-  //               new Runnable() {
-  //                 public void run() {
-  //                   Robot.yawProvider.zeroYaw();
-  //                   logf("Hit back on Game Pad\n");
-  //                 }
-  //               }));
-  // }
 
   // The following code is an attempt to learn how to program commands
 
@@ -289,44 +292,52 @@ public class RobotContainer {
     }
   }
 
-  Command zy = new InstantCommand(
+  // Command leftxToLeds = new InstantCommand(
+  //     new Runnable() {
+  //       public void run() {
+  //         int num = Config.numberOfLeds - 6;
+  //         double value = RobotContainer.driveController.getLeftX();
+  //         if (value < 0.0)
+  //           value = 0.0;
+  //         leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
+  //       }
+  //    });
+
+  Command zeroYawCommand = new InstantCommand(
       new Runnable() {
         public void run() {
           Robot.yawProvider.zeroYaw();
         }
       });
 
-  Command testCmd = new InstantCommand(
-      new Runnable() {
-        public void run() {
-          logf("Hit x on Game Pad\n");
-        }
-      });
 
-  //Trigger tr = new Trigger(triggers::getSwitch);
+  // Trigger tr = new Trigger(triggers::getSwitch);
 
   private void configureButtonBindings() {
-    // driveController.x().onTrue(testCmd);
-    // driveController
-    //     .back()
-    //     .whileTrue(
-    //         new InstantCommand(
-    //             new Runnable() {
-    //               public void run() {
-    //                 Robot.yawProvider.zeroYaw();
-    //                 logf("Hit back on Game Pad\n");
-    //                 setMotorForTest();
-    //               }
-    //             }));
-    // tr.onTrue(testTrigger);
 
-    if (motorKraken != null) {
+    if (Config.robotType == RobotType.MiniKeith) {
+      driveController.back().onTrue(
+          new InstantCommand(
+              new Runnable() {
+                public void run() {
+                  setMotorForTest();
+                }
+              }));
+    }
+    driveController.back()
+        .whileTrue(
+            new InstantCommand(
+                new Runnable() {
+                  public void run() {
+                    Robot.yawProvider.zeroYaw();
+                    logf("Hit back on Game Pad\n");
+                  }
+                }));
+
+    if (motorKraken != null && testKraken) {
       driveController.a().whileTrue(motorKraken.sysIdDynamic(Direction.kForward));
-      
       driveController.b().whileTrue(motorKraken.sysIdDynamic(Direction.kReverse));
-      
       driveController.x().whileTrue(motorKraken.sysIdQuasistatic(Direction.kForward));
-      
       driveController.y().whileTrue(motorKraken.sysIdQuasistatic(Direction.kReverse));
     }
     if (motorSparkMax != null) {
@@ -351,4 +362,6 @@ public class RobotContainer {
       logf("Input Changed:%b\n", input.get());
     }
   }
+
+  public Optional<RobotRunnable> robot() { return runnableRobot; }
 }

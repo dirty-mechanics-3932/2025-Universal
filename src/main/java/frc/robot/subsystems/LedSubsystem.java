@@ -5,18 +5,21 @@ import static frc.robot.utilities.Util.logf;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Config;
 import frc.robot.Robot;
 
 public class LedSubsystem extends SubsystemBase {
     private boolean changed = false;
     private AddressableLED led;
     private AddressableLEDBuffer ledBuffer;
-    private int numberOfLeds = Robot.config.numberOfLeds;
+    private int numberOfLeds = Config.numberOfLeds;
 
-    // enum State {
-    // SET_IDLE_COLOR, IDLE, FLASH, SET_HOLDING_COLOR, HOLDING, SET_INDEXED_COLOR,
-    // INDEXED, SET_ERROR_COLOR, ERROR
-    // };
+    public enum STATE {
+        SET_IDLE_COLOR, IDLE, FLASH, SET_HOLDING_COLOR, HOLDING, SET_INDEXED_COLOR,
+        INDEXED, SET_ERROR_COLOR, ERROR
+    };
+
+    STATE state = STATE.IDLE;
 
     boolean lastNoteState = false;
     boolean light = false;
@@ -44,26 +47,52 @@ public class LedSubsystem extends SubsystemBase {
         led.start();
     }
 
+    private void setLed(int num, int r, int g, int b) {
+        if (num < numberOfLeds && num >= 0) {
+            try {
+                ledBuffer.setRGB(num, r, g, b);
+            } catch (Exception e) {
+                logf("***** led number %d out of range\n", num);
+            }
+        } else {
+            logf("!!!!!! led number %d out of range\n", num);
+        }
+    }
+
+    public void setMode(STATE state) {
+        this.state = state;
+    }
+
     public void setTestCaseColors(int mode, int r, int g, int b) {
         setRangeOfColor(mode, 1, r, g, b);
     }
 
     public void setAllColors(int r, int g, int b) {
         for (int i = 0; i < numberOfLeds; i++) {
-            ledBuffer.setRGB(i, r, g, b);
+            setLed(i, r, g, b);
         }
         changed = true;
     }
 
     public void setRangeOfColor(int start, int num, int r, int g, int b) {
         for (int i = start; i <= start + num; i++) {
-            ledBuffer.setRGB(i, r, g, b);
+            setLed(i, r, g, b);
+        }
+        changed = true;
+    }
+
+    public void setRangeOfColor(int start, int num, int total, int r, int g, int b) {
+        for (int i = start; i < start + total; i++) {
+            if (i < num + start)
+                setLed(i, r, g, b);
+            else
+                setLed(i, 0, 0, 0);
         }
         changed = true;
     }
 
     public void setOneLed(int num, int r, int g, int b) {
-        ledBuffer.setRGB(num, r, g, b);
+        setLed(num, r, g, b);
         changed = true;
     }
 }

@@ -445,12 +445,15 @@ public class MotorSparkMax extends SubsystemBase {
                 break;
             case SPEED:
                 value = robotContainer.getSpeedFromTriggers();
-                if (value > 0.05) {
+                if (Math.abs(value) > 0.15) {
                     if (setPoint != value)
                         logf("%s Set speed:%.2f\n", name, value);
-                    setSpeed(value);
-                    setPoint = value;
+                } else {
+                    value = 0.0;
                 }
+                setSpeed(value);
+                setPoint = value;
+
                 break;
         }
         RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);

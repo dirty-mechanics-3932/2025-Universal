@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Robot.robotContainer;
@@ -261,7 +260,7 @@ public class MotorKraken extends SubsystemBase {
         break;
       case SPEED:
         value = robotContainer.getSpeedFromTriggers();
-        if (value > 0.05) {
+        if (Math.abs(value) > 0.05) {
           if (setP != value)
             logf("Set Test speed:%.2f\n", value);
           setP = value;
