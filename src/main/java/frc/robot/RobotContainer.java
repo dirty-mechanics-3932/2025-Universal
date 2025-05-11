@@ -11,6 +11,7 @@ import com.revrobotics.sim.SparkFlexExternalEncoderSim;
 import com.revrobotics.spark.SparkFlexExternalEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
@@ -129,7 +130,7 @@ public class RobotContainer {
     double kP;
     double kI;
     double kD;
-    PIDController pidNeo = new PIDController(kP, kI, kD);
+    //PIDController pidNeo = new PIDController(kP, kI, kD);
 
     // Set the default Robot Mode to Cube
     switch (Config.robotType) {
@@ -228,16 +229,30 @@ public class RobotContainer {
         MotorSRX RedMotor = new MotorSRX("RedMotor", 10, -1, true);
         SparkMaxConfig motorConfig = new SparkMaxConfig();
 
-        Command turnRedMotor = Commands.run(() -> RedMotor.setSpeed(getSpeedFromTriggers()), talonSRX);
-        Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(neoMotorSlewRateLimiter.calculate(driveController.getLeftX())), motorFlex); 
+        //Sets the left and right triggers to control the redmotor
+        Command turnRedMotor = Commands.run(() -> RedMotor.setSpeed(getSpeedFromTriggers()), RedMotor); 
+        //sets the left stick on the controller to control the neomotor
+        Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(driveController.getLeftX()), neoMotor); 
+
+        //schedules the command defined in the variable turnredmotor
+        turnRedMotor.ignoringDisable(true).schedule(); 
+        //schedules the command defined in the variable turnneomotor
+        //turnNeoMotor.ignoringDisable(true).schedule();
         
-        turnRedMotor.ignoringDisable(true).schedule();
-        turnNeoMotor.ignoringDisable(true).schedule();
-         
-        motorConfig.feedbackSensor().closedLoop()
-          .p(0)
-          .i(0)
-          .d(0);
+        
+        
+        motorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+          //The position value in pid, tries to get the voltage/velocity as close to the setpoint as possible
+          .p(1) 
+          //can correct when the p undershoots the setpoint defined
+          .i(0) 
+          //Controls the oscillations that happen so that the motor isn't repeatedly oscillating
+          .d(0) 
+          //feedforward determines the velocity using an algorithm before the encoder tells the robot
+          .velocityFF(1.0 / 5767) 
+          //sets the voltage range for the pid values
+          .outputRange(-1, 1);
+        
         break;
     }
     logf("Finished Creating RobotContainer\n");
