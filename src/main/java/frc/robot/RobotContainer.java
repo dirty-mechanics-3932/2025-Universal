@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Config.RobotType;
 import frc.robot.platforms.DarrylMini;
+import frc.robot.platforms.Mando;
 import frc.robot.platforms.BlondeMini;
 import frc.robot.platforms.MiniMini;
 import frc.robot.platforms.ParadeSrxDriveRobots;
@@ -192,8 +193,7 @@ public class RobotContainer {
         new DrivetrainJaguar(driveHID);
         break;
       case Mando: // Train engine
-        // Use SparkMax motors for drive train
-        new DrivetrainSpark(driveHID);
+        runnableRobot = Optional.of(new Mando(driveHID));
         break;
       case Sibling2025:
         runnableRobot = Optional.of(new Sibling2025(driveHID));
