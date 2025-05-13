@@ -227,20 +227,25 @@ public class RobotContainer {
       case MiniIsaac:
         MotorFlex neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
         MotorSRX RedMotor = new MotorSRX("RedMotor", 10, -1, true);
-        SparkMaxConfig motorConfig = new SparkMaxConfig();
+        //SparkMaxConfig motorConfig = new SparkMaxConfig();
 
+        PID neoPIDMotionMagic = new PID("neoMotorPID", 1, 0, 0, 0, 0, -1, 1, false); 
+
+
+        Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
+
+        turnNeoMotor.ignoringDisable(true).schedule();
         //Sets the left and right triggers to control the redmotor
-        Command turnRedMotor = Commands.run(() -> RedMotor.setSpeed(getSpeedFromTriggers()), RedMotor); 
+        //Command turnRedMotor = Commands.run(() -> RedMotor.setSpeed(getSpeedFromTriggers()), RedMotor); 
         //sets the left stick on the controller to control the neomotor
-        Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(driveController.getLeftX()), neoMotor); 
-
+        //Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(driveController.getLeftX()), neoMotor); 
+        RedMotor.setMotionMagicPID(neoPIDMotionMagic, 0, FeedbackDevice.QuadEncoder);
         //schedules the command defined in the variable turnredmotor
-        turnRedMotor.ignoringDisable(true).schedule(); 
+        //turnRedMotor.ignoringDisable(true).schedule(); 
         //schedules the command defined in the variable turnneomotor
         //turnNeoMotor.ignoringDisable(true).schedule();
         
-        
-        
+        /* 
         motorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           //The position value in pid, tries to get the voltage/velocity as close to the setpoint as possible
           .p(1) 
@@ -252,7 +257,7 @@ public class RobotContainer {
           .velocityFF(1.0 / 5767) 
           //sets the voltage range for the pid values
           .outputRange(-1, 1);
-        
+        */
         break;
     }
     logf("Finished Creating RobotContainer\n");
