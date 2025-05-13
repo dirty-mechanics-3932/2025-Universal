@@ -38,6 +38,7 @@ import frc.robot.platforms.BlondeMini;
 import frc.robot.platforms.MiniMini;
 import frc.robot.platforms.ParadeSrxDriveRobots;
 import frc.robot.platforms.RobotRunnable;
+import frc.robot.platforms.Sibling2025;
 import frc.robot.subsystems.DrivetrainJaguar;
 import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.DrivetrainSpark;
@@ -178,12 +179,8 @@ public class RobotContainer {
         break;
       case Squidward:
         runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
-
-        // Uses Talon SRX for drive train())
         break;
       case Kevin: // Ginger Bread Robot
-        // Uses Talon SRX for drive train
-
         runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
         break;
       case Wooly: // Big ball shooter
@@ -199,7 +196,7 @@ public class RobotContainer {
         new DrivetrainSpark(driveHID);
         break;
       case Sibling2025:
-        new DrivetrainTestSwerve(driveHID);
+        runnableRobot = Optional.of(new Sibling2025(driveHID));
         break;
       case MiniIsaac:
         MotorFlex neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
