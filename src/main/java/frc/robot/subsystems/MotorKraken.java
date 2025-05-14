@@ -190,8 +190,9 @@ public class MotorKraken extends SubsystemBase {
     if (Math.abs(velocity) > 0.05 && myLogging && Robot.count % 20 == 0) {
       logf("%s vel:%.2f RPM:%.2f cur:%.2f pos:%.2f err:%.2f\n", name, velocity, velocity * 60.0, current, pos, err);
     }
-    if (testMode)
+    if (testMode) {
       testCases();
+    }
 
     /*inputs.position = motor.getPosition().getValue();
     inputs.velocity = motor.getVelocity().getValue();

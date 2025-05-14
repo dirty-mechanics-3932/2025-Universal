@@ -3,6 +3,8 @@ package frc.robot;
 // import static frc.robot.Robot.yaw;
 import static frc.robot.utilities.Util.logf;
 
+import java.util.Optional;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -30,6 +32,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Config.RobotType;
+import frc.robot.platforms.DarrylMini;
+import frc.robot.platforms.BlondeMini;
+import frc.robot.platforms.MiniMini;
+import frc.robot.platforms.ParadeSrxDriveRobots;
+import frc.robot.platforms.RobotRunnable;
 import frc.robot.subsystems.DrivetrainJaguar;
 import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.DrivetrainSpark;
@@ -54,6 +61,7 @@ import frc.robot.subsystems.TestTriggers;
  * declared here.
  */
 public class RobotContainer {
+  private Optional<RobotRunnable> runnableRobot = Optional.empty();
   public SlewRateLimiter neoMotorSlewRateLimiter = new SlewRateLimiter(.5);
   public static final CommandXboxController driveController = new CommandXboxController(2);
   private static final XboxController driveHID = driveController.getHID();
@@ -137,48 +145,14 @@ public class RobotContainer {
       case Simulation:
         break;
       case BlondeMini:
-        // new DrivetrainSRX(driveHID);
-        motorKraken = new MotorKraken("testSysid", 25, -1, true);
-        boolean testSmartMaxBlonde = true;
-        MotorSparkMax motor = new MotorSparkMax("TestMax", 20, -1, false, false);
-        if (testSmartMaxBlonde) {
-          motor.setLogging(true);
-          motor.setTestMode(true);
-        } else {
-          Command blondeMove = Commands.run(() -> motor.setSpeed(getSpeedFromTriggers()), motor);
-          blondeMove.ignoringDisable(true).schedule();
-        }
+       runnableRobot = Optional.of(new BlondeMini(driveHID));
         break;
       case DarrylMini:
-        new DrivetrainSRX(driveHID);
-        MotorSRX dmotor = new MotorSRX("DarrylSRX", 10, -1, true);
-        Command darrylMoveBack = Commands.run(() -> dmotor.setSpeed(getSpeedFromTriggers()), dmotor);
-        darrylMoveBack.ignoringDisable(true).schedule();
+        runnableRobot = Optional.of(new DarrylMini());
         break;
       case MiniMini:
-        MotorSRX redMotor = new MotorSRX("RedMotor", 10, -1, true);
-        PID positionPID = new PID("Pos", .08, 0, 0, 0, 0, -1, 1, true);
-        PID velocityPID = new PID("Vel", .005, 0, 0, 0, 1.5, -1, 1, true);
-        // Motion Magic messes things up positionPID.setMotionMagicSRX(.5, 2.0);
-        redMotor.setPositionPID(positionPID, 0, FeedbackDevice.QuadEncoder); // set pid for SRX
-        redMotor.setVelocityPID(velocityPID, 1, FeedbackDevice.QuadEncoder);
+        runnableRobot = Optional.of(new MiniMini(3, 10, driveController));
 
-        MotorFlex flexMotor = new MotorFlex("FlexMotor", 3, -1, true);
-        flexMotor.setLogging(true);
-        flexMotor.setTestMode(true);
-        // redMotor.setUpForTestCases(leds);
-        // redMotor.setLogging(true);
-        // redMotor.setEncoderTicksPerRev(2048);
-        // Command redMoveCmd = Commands.run(() ->
-        // redMotor.setSpeed(driveController.getLeftTriggerAxis()), redMotor);
-        // Command neoMoveCmd = Commands.run(() ->
-        // flexMotor.setSpeed(driveController.getRightTriggerAxis()), flexMotor);
-        // new ScheduleCommand(Commands.parallel(redMoveCmd,
-        // neoMoveCmd).ignoringDisable(true)).schedule();
-        // Command miniMove = Commands.run(() ->
-        // flexMotor.setSpeed(driveController.getLeftTriggerAxis()), flexMotor);
-        // driveController.start().onTrue(miniMove);
-        // new ScheduleCommand(miniMove);
         break;
       case MiniKeith: // Test mini
         // Use Talon SRX for drive train
@@ -202,12 +176,14 @@ public class RobotContainer {
         leftxToLeds.ignoringDisable(true).schedule();
         break;
       case Squidward:
-        drivetrainSRX = new DrivetrainSRX(driveHID);
+      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
+      
         // Uses Talon SRX for drive train())
         break;
       case Kevin: // Ginger Bread Robot
         // Uses Talon SRX for drive train
-        drivetrainSRX = new DrivetrainSRX(driveHID);
+       
+      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
         break;
       case Wooly: // Big ball shooter
         // Uses Jaguars for drive train and shooter
@@ -370,7 +346,15 @@ public class RobotContainer {
       driveController.x().whileTrue(motorKraken.sysIdQuasistatic(Direction.kForward));
       driveController.y().whileTrue(motorKraken.sysIdQuasistatic(Direction.kReverse));
     }
-    
+    if (motorSparkMax != null) {
+      driveController.a().whileTrue(motorSparkMax.sysIdDynamic(Direction.kForward));
+      
+      driveController.b().whileTrue(motorSparkMax.sysIdDynamic(Direction.kReverse));
+      
+      driveController.x().whileTrue(motorSparkMax.sysIdQuasistatic(Direction.kForward));
+      
+      driveController.y().whileTrue(motorSparkMax.sysIdQuasistatic(Direction.kReverse));
+    }
   }
     */
 
@@ -387,4 +371,6 @@ public class RobotContainer {
     */
   //}
   }
+
+  public Optional<RobotRunnable> robot() { return runnableRobot; }
 }

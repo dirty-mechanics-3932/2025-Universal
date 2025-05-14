@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.platforms.RobotRunnable;
 import frc.robot.subsystems.YawProvider;
 
 // import dev.doglog.DogLog;
@@ -78,26 +79,54 @@ public class Robot extends LoggedRobot {
     yawProvider.zeroYaw();
     splashScreen("1.5");
     robotContainer = new RobotContainer();
+
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().robotInit();
+    }
   }
 
   @Override
   public void teleopInit() {
     logf("Start Teleop\n");
     System.gc();
+
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().teleopInit();
+    }
+  }
+
+  @Override
+  public void testInit() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().testInit();
+    }
+  }
+
+  @Override
+  public void autonomousInit() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().testInit();
+    }
   }
 
   @Override
   public void robotPeriodic() {
-    yaw = yawProvider.getYaw();
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().robotPeriodic();
+    }
     CommandScheduler.getInstance().run();
+
     if (count % 20 == 4) { // Update Dashboard every 20 cycles or 200 milliseconds (20 ms * 10)
+      yaw = yawProvider.getYaw();
       SmartDashboard.putNumber("Yaw", round2(yaw));
     }
-    count++;
-  }
 
-  @Override
-  public void disabledPeriodic() {
+    count++;
   }
 
   @Override
@@ -109,7 +138,54 @@ public class Robot extends LoggedRobot {
     if (count % 50 == 0) {
       // System.gc();
     }
+
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().teleopPeriodic();
+    }
   }
+
+  @Override
+  public void autonomousPeriodic() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().autonomousPeriodic();
+    }
+  }
+
+  @Override
+  public void disabledPeriodic() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().disabledPeriodic();
+    }
+  }
+
+  @Override
+  public void disabledInit() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().disabledInit();
+    }
+  }
+
+  @Override
+  public void autonomousExit() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().autonomousExit();
+    }
+  }
+
+  @Override
+  public void disabledExit() {
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+      robotPlatform.get().disabledExit();
+    }
+  }
+
+  
 
   // @Override
   // public void simulationPeriodic() {
