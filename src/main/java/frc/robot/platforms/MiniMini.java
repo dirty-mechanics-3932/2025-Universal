@@ -12,19 +12,22 @@ import frc.robot.subsystems.MotorSRX;
 import frc.robot.subsystems.PID;
 
 public class MiniMini implements RobotRunnable {
+    public static final int RED_MOTOR_CAN_ID = 3;
+    public static final int FLEX_MOTOR_CAN_ID = 10;
+
     private MotorSRX m_redMotor;
     private MotorFlex m_flexMotor;
     private CommandXboxController m_driveHID;
 
-    public MiniMini(int redMotorCanID, int flexMotorCanID, CommandXboxController driverHID) {
-        m_redMotor = new MotorSRX("RedMotor", redMotorCanID, -1, true);
+    public MiniMini(CommandXboxController driverHID) {
+        m_redMotor = new MotorSRX("RedMotor", RED_MOTOR_CAN_ID, -1, true);
         PID positionPID = new PID("Pos", .08, 0, 0, 0, 0, -1, 1, true);
         PID velocityPID = new PID("Vel", .005, 0, 0, 0, 1.5, -1, 1, true);
         // Motion Magic messes things up positionPID.setMotionMagicSRX(.5, 2.0);
         m_redMotor.setPositionPID(positionPID, 0, FeedbackDevice.QuadEncoder); // set pid for SRX
         m_redMotor.setVelocityPID(velocityPID, 1, FeedbackDevice.QuadEncoder);
     
-        m_flexMotor = new MotorFlex("FlexMotor", flexMotorCanID, -1, true);
+        m_flexMotor = new MotorFlex("FlexMotor", FLEX_MOTOR_CAN_ID, -1, true);
         m_flexMotor.setLogging(true);
         m_flexMotor.setTestMode(true);
         // redMotor.setUpForTestCases(leds);
