@@ -225,40 +225,24 @@ public class RobotContainer {
         new DrivetrainTestSwerve(driveHID);
         break;
       case MiniIsaac:
+        
+      
         MotorFlex neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
-        MotorSRX RedMotor = new MotorSRX("RedMotor", 10, -1, true);
-        //SparkMaxConfig motorConfig = new SparkMaxConfig();
-
+        MotorSRX redMotor2 = new MotorSRX("RedMotor", 10, -1, true);
+        SparkMaxConfig motorConfig = new SparkMaxConfig();
         PID neoPIDMotionMagic = new PID("neoMotorPID", 1, 0, 0, 0, 0, -1, 1, false); 
 
+        if (redMotor2 != null) {
+          driveController.a().whileTrue(redMotor2.sysIdDynamic(Direction.kForward));
+          driveController.b().whileTrue(redMotor2.sysIdDynamic(Direction.kReverse));
+          driveController.x().whileTrue(redMotor2.sysIDQuasistatic(Direction.kForward));
+          driveController.y().whileTrue(redMotor2.sysIDQuasistatic(Direction.kReverse));
+        }
 
-        Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
+        //Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
 
-        turnNeoMotor.ignoringDisable(true).schedule();
-        //Sets the left and right triggers to control the redmotor
-        //Command turnRedMotor = Commands.run(() -> RedMotor.setSpeed(getSpeedFromTriggers()), RedMotor); 
-        //sets the left stick on the controller to control the neomotor
-        //Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(driveController.getLeftX()), neoMotor); 
-        RedMotor.setMotionMagicPID(neoPIDMotionMagic, 0, FeedbackDevice.QuadEncoder);
-        //schedules the command defined in the variable turnredmotor
-        //turnRedMotor.ignoringDisable(true).schedule(); 
-        //schedules the command defined in the variable turnneomotor
         //turnNeoMotor.ignoringDisable(true).schedule();
-        
-        /* 
-        motorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-          //The position value in pid, tries to get the voltage/velocity as close to the setpoint as possible
-          .p(1) 
-          //can correct when the p undershoots the setpoint defined
-          .i(0) 
-          //Controls the oscillations that happen so that the motor isn't repeatedly oscillating
-          .d(0) 
-          //feedforward determines the velocity using an algorithm before the encoder tells the robot
-          .velocityFF(1.0 / 5767) 
-          //sets the voltage range for the pid values
-          .outputRange(-1, 1);
-        */
-        break;
+                break;
     }
     logf("Finished Creating RobotContainer\n");
     if (Config.robotType != RobotType.Simulation) {
@@ -369,6 +353,7 @@ public class RobotContainer {
                 }
               }));
     }
+    /* 
     driveController.back()
         .whileTrue(
             new InstantCommand(
@@ -377,25 +362,29 @@ public class RobotContainer {
                     Robot.yawProvider.zeroYaw();
                     logf("Hit back on Game Pad\n");
                   }
-                }));
-
+                })) */
+/* 
     if (motorKraken != null && testKraken) {
       driveController.a().whileTrue(motorKraken.sysIdDynamic(Direction.kForward));
       driveController.b().whileTrue(motorKraken.sysIdDynamic(Direction.kReverse));
       driveController.x().whileTrue(motorKraken.sysIdQuasistatic(Direction.kForward));
       driveController.y().whileTrue(motorKraken.sysIdQuasistatic(Direction.kReverse));
     }
+    
   }
+    */
 
   // Initializes a DigitalInput
   DigitalInput input = new DigitalInput(Robot.config.DIOTestTrigger);
   // Creates a Debouncer in "both" mode.
   Debouncer m_debouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
-
+  /* 
   void deB() {
     // If false the signal must go true for at least .1 seconds before read
     if (m_debouncer.calculate(input.get())) {
       logf("Input Changed:%b\n", input.get());
     }
+    */
+  //}
   }
 }
