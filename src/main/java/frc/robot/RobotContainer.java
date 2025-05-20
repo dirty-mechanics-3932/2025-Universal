@@ -257,11 +257,11 @@ public class RobotContainer {
   }
 
   public void setLedsLeftX() {
-    int num = Config.numberOfLeds - 6;
-    double value = RobotContainer.driveController.getLeftX();
-    if (value < 0.0)
-      value = 0.0;
-    leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
+      int num = Config.numberOfLeds - 6;
+      double value = RobotContainer.driveController.getLeftX();
+      if (value < 0.0)
+        value = 0.0;
+      leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
   }
 
   // Command h = Commands.run(() -> logf("Hit\f"));
@@ -299,15 +299,15 @@ public class RobotContainer {
   }
 
   // Command leftxToLeds = new InstantCommand(
-  // new Runnable() {
-  // public void run() {
-  // int num = Config.numberOfLeds - 6;
-  // double value = RobotContainer.driveController.getLeftX();
-  // if (value < 0.0)
-  // value = 0.0;
-  // leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
-  // }
-  // });
+  //    new Runnable() {
+  //      public void run() {
+  //        int num = Config.numberOfLeds - 6;
+  //        double value = RobotContainer.driveController.getLeftX();
+  //        if (value < 0.0)
+  //          value = 0.0;
+  //        leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
+  //      }
+  //  });
 
   Command zeroYawCommand = new InstantCommand(
       new Runnable() {
@@ -329,17 +329,9 @@ public class RobotContainer {
                 }
               }));
     }
-    /* 
-    driveController.back()
-        .whileTrue(
-            new InstantCommand(
-                new Runnable() {
-                  public void run() {
-                    Robot.yawProvider.zeroYaw();
-                    logf("Hit back on Game Pad\n");
-                  }
-                })) */
-/* 
+     
+    driveController.back().whileTrue(zeroYawCommand);
+ 
     if (motorKraken != null && testKraken) {
       driveController.a().whileTrue(motorKraken.sysIdDynamic(Direction.kForward));
       driveController.b().whileTrue(motorKraken.sysIdDynamic(Direction.kReverse));
@@ -356,7 +348,7 @@ public class RobotContainer {
       driveController.y().whileTrue(motorSparkMax.sysIdQuasistatic(Direction.kReverse));
     }
   }
-    */
+    
 
   // Initializes a DigitalInput
   DigitalInput input = new DigitalInput(Robot.config.DIOTestTrigger);
@@ -370,7 +362,6 @@ public class RobotContainer {
     }
     */
   //}
-  }
 
   public Optional<RobotRunnable> robot() { return runnableRobot; }
 }
