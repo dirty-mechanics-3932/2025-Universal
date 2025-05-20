@@ -95,6 +95,7 @@ public class RobotContainer {
   }
 
   private Motors motors = Motors.FLEX; // Set default motor for testing
+  
   private void setMotorForTest() {
     testFlex = false;
     testSmartMax = false;
@@ -165,15 +166,15 @@ public class RobotContainer {
         motorSRX = new MotorSRX("SRX", 14, 0, true);
         motorSRX.setupForTestCasesRedMotor();
         setMotorForTest();
-        // Code to display CANCoder value
+      // Code to display CANCoder value
         canCoder = new CANcoder(20);
         Command miniCancoder = Commands.run(
             () -> SmartDashboard.putNumber("CanCo", canCoder.getPosition().getValueAsDouble()));
         miniCancoder.ignoringDisable(true).schedule();
-
+        
         // Code to have leds reflect value of LeftX
         Command leftxToLeds = Commands.run(
-            () -> setLedsLeftX());
+          () -> setLedsLeftX());
         leftxToLeds.ignoringDisable(true).schedule();
         break;
       case Squidward:
@@ -298,16 +299,16 @@ public class RobotContainer {
     }
   }
 
-  // Command leftxToLeds = new InstantCommand(
-  //    new Runnable() {
-  //      public void run() {
-  //        int num = Config.numberOfLeds - 6;
-  //        double value = RobotContainer.driveController.getLeftX();
-  //        if (value < 0.0)
-  //          value = 0.0;
-  //        leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
-  //      }
-  //  });
+  //  Command leftxToLeds = new InstantCommand(
+  //     new Runnable() {
+  //       public void run() {
+  //         int num = Config.numberOfLeds - 6;
+  //         double value = RobotContainer.driveController.getLeftX();
+  //         if (value < 0.0)
+  //           value = 0.0;
+  //         leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
+  //       }
+  //   });
 
   Command zeroYawCommand = new InstantCommand(
       new Runnable() {
@@ -316,6 +317,7 @@ public class RobotContainer {
         }
       });
 
+      
   // Trigger tr = new Trigger(triggers::getSwitch);
 
   private void configureButtonBindings() {
