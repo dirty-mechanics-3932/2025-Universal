@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.sim.SparkFlexExternalEncoderSim;
@@ -215,10 +216,9 @@ public class RobotContainer {
           driveController.y().whileTrue(redMotor2.sysIDQuasistatic(Direction.kReverse));
         }
 
-        //Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
+        Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
 
-        //turnNeoMotor.ignoringDisable(true).schedule();
-                break;
+        turnNeoMotor.ignoringDisable(true).schedule();
     }
     logf("Finished Creating RobotContainer\n");
     if (Config.robotType != RobotType.Simulation) {
