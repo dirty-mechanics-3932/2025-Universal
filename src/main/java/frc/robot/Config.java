@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class Config {
     public enum RobotType {
-        MiniKeith, BlondeMini, Squidward, Kevin, Wooly, Mando, Simulation, DarrylMini, MiniMini, Sibling2025
+        MiniKeith, BlondeMini, Squidward, Kevin, Wooly, Mando, Simulation, DarrylMini, MiniMini, Sibling2025, MiniIsaac
     };
 
     // Type of Robot

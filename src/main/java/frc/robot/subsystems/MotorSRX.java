@@ -1,8 +1,11 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Robot.count;
 import static frc.robot.utilities.Util.logf;
 import static frc.robot.utilities.Util.round2;
+
+import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.Robot.robotContainer;
 
@@ -12,12 +15,17 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import edu.wpi.first.units.measure.*;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 // setSensorPhase() should change the direction reported in the getSelectedSensor*() methods
 // (but not the SensorCollection methods).
@@ -25,8 +33,8 @@ import frc.robot.RobotContainer;
 // but not the position reported by "Quad/MagEnc(rel)"
 
 public class MotorSRX extends SubsystemBase implements MotorDef {
-  private TalonSRX motor;
-  private TalonSRX followMotor;
+  private WPI_TalonSRX motor;
+  private WPI_TalonSRX followMotor;
   private String name;
   private int id;
   private int followId;
@@ -37,19 +45,31 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   private FeedbackDevice feedBackDevice = FeedbackDevice.QuadEncoder;
   private int numberCyclesForDisplay = 10000000;
   private boolean enableTestMode = false;
+  public final SysIdRoutine sysID;
 
   public MotorSRX(String name, int id, int followId, boolean logging) {
+
+    sysID = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            null,
+            null,
+            Time.ofBaseUnits(3.5, Seconds),
+            (state) -> Logger.recordOutput(name + "/SysIDState", state.toString())),
+        new SysIdRoutine.Mechanism((voltage) -> setVoltage(voltage), null, this));
+
     this.name = name;
     this.id = id;
     this.followId = followId;
     myLogging = logging;
-    motor = new TalonSRX(this.id);
+    motor = new WPI_TalonSRX(this.id);
     errorCode = motor.configFactoryDefault();
+
     if (errorCode != ErrorCode.OK) {
       logf("????????? Motor %s Error: %s ??????????\n", name, errorCode);
     }
+
     if (followId > 0) {
-      followMotor = new TalonSRX(followId);
+      followMotor = new WPI_TalonSRX(followId);
       errorCode = followMotor.configFactoryDefault();
       followMotor.follow(motor);
       if (errorCode != ErrorCode.OK) {
@@ -74,6 +94,10 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     myLogging = value;
   }
 
+  public void setVoltage(Voltage value) {
+    motor.setVoltage(value);
+  }
+
   public void setSmartTicks(int numberLoopsForDisplay) {
     if (numberLoopsForDisplay <= 0)
       this.numberCyclesForDisplay = Integer.MAX_VALUE;
@@ -82,7 +106,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   }
 
   public void setTestMode(boolean value) {
-    //logf("Set SRX Test Mode:%b\n", value);
+    // logf("Set SRX Test Mode:%b\n", value);
     enableTestMode = value;
   }
 
@@ -357,18 +381,23 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   // slot0.kD = 0.5; // A velocity error of 1 rps results in 0.5 V output
 
   // Setting the Feed Forward for a velcity PID
-  // Using Tuner (Self-test Snapshot or Plotter), we’ve measured a peak velocity of 9326 native units per 100ms at 100% output. 
-  // Get peak velocity - this can also be retrieved using getSelectedSensorVelocity (routine or VI).
-  // They measured a peak velocity of 9326 native units per 100ms at 100% output. 
-  // However, many mechanical systems and motors are not perfectly linear (though they are close). 
-  // To account for this, we should calculate our feed forward using a measured velocity around the percent output we will usually run the motor.
-  // For our mechanism, we will typically be running the motor ~75% output. 
-  // We then use Tuner (Self-test Snapshot or Plotter) to measure our velocity - in this case, we measure a velocity of 7112 native units per 100ms.
-  // Now let’s calculate a Feed-forward gain so that 75% motor output is calculated when the requested speed is 7112 native units per 100ms.
+  // Using Tuner (Self-test Snapshot or Plotter), we’ve measured a peak velocity
+  // of 9326 native units per 100ms at 100% output.
+  // Get peak velocity - this can also be retrieved using
+  // getSelectedSensorVelocity (routine or VI).
+  // They measured a peak velocity of 9326 native units per 100ms at 100% output.
+  // However, many mechanical systems and motors are not perfectly linear (though
+  // they are close).
+  // To account for this, we should calculate our feed forward using a measured
+  // velocity around the percent output we will usually run the motor.
+  // For our mechanism, we will typically be running the motor ~75% output.
+  // We then use Tuner (Self-test Snapshot or Plotter) to measure our velocity -
+  // in this case, we measure a velocity of 7112 native units per 100ms.
+  // Now let’s calculate a Feed-forward gain so that 75% motor output is
+  // calculated when the requested speed is 7112 native units per 100ms.
   // F-gain = (75% X 1023) / 7112 F-gain = 0.1079
-  // Let’s check our math, if the target speed is 7112 native units per 100ms, 
+  // Let’s check our math, if the target speed is 7112 native units per 100ms,
   // Closed-loop output will be (0.1079 X 7112) => 767.38 (75% of full forward).
-
 
   public void setupForTestCasesRedMotor() {
     PID positionPID = new PID("Pos", 0.08, 0, 0, 0, 0, -1, 1, false);
@@ -383,6 +412,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     PID motionMagicPID = new PID("MM", 0.08, 0, 0, 0, 0, -1, 1, false);
     setUpForTestCases(positionPID, velocityPID, motionMagicPID);
   }
+
   public void setUpForTestCases(PID positionPID, PID velocityPID, PID motionMagicPID) {
     logf("Start of Test SRX Subsystem\n");
     setInverted(true);
@@ -442,11 +472,22 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
       case SPEED:
         value = robotContainer.getSpeedFromTriggers();
         if (Math.abs(value) > 0.05)
-          logf("Set Test speed:%.2f\n", value);   
+          logf("Set Test speed:%.2f\n", value);
         setSpeed(value);
         setP = value;
         break;
     }
     RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
+  }
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return run(() -> setSpeed(0.0))
+      .withTimeout(.5)
+      .andThen(sysID.dynamic(direction).withTimeout(5));
+  }
+
+  public Command sysIDQuasistatic(SysIdRoutine.Direction direction) {
+    return run(() -> setSpeed(0.0))
+      .withTimeout(.5)
+      .andThen(sysID.quasistatic(direction).withTimeout(5));
   }
 }
