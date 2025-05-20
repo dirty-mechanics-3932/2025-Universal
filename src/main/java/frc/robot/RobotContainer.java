@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.sim.SparkFlexExternalEncoderSim;
@@ -94,6 +95,7 @@ public class RobotContainer {
   }
 
   private Motors motors = Motors.FLEX; // Set default motor for testing
+
   private void setMotorForTest() {
     testFlex = false;
     testSmartMax = false;
@@ -134,18 +136,17 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    
     double kP;
     double kI;
     double kD;
-    //PIDController pidNeo = new PIDController(kP, kI, kD);
+    // PIDController pidNeo = new PIDController(kP, kI, kD);
 
     // Set the default Robot Mode to Cube
     switch (Config.robotType) {
       case Simulation:
         break;
       case BlondeMini:
-       runnableRobot = Optional.of(new BlondeMini(driveHID));
+        runnableRobot = Optional.of(new BlondeMini(driveHID));
         break;
       case DarrylMini:
         runnableRobot = Optional.of(new DarrylMini());
@@ -176,14 +177,14 @@ public class RobotContainer {
         leftxToLeds.ignoringDisable(true).schedule();
         break;
       case Squidward:
-      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
-      
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
+
         // Uses Talon SRX for drive train())
         break;
       case Kevin: // Ginger Bread Robot
         // Uses Talon SRX for drive train
-       
-      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
+
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
         break;
       case Wooly: // Big ball shooter
         // Uses Jaguars for drive train and shooter
@@ -201,12 +202,10 @@ public class RobotContainer {
         new DrivetrainTestSwerve(driveHID);
         break;
       case MiniIsaac:
-        
-      
         MotorFlex neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
         MotorSRX redMotor2 = new MotorSRX("RedMotor", 10, -1, true);
         SparkMaxConfig motorConfig = new SparkMaxConfig();
-        PID neoPIDMotionMagic = new PID("neoMotorPID", 1, 0, 0, 0, 0, -1, 1, false); 
+        PID neoPIDMotionMagic = new PID("neoMotorPID", 1, 0, 0, 0, 0, -1, 1, false);
 
         if (redMotor2 != null) {
           driveController.a().whileTrue(redMotor2.sysIdDynamic(Direction.kForward));
@@ -215,10 +214,9 @@ public class RobotContainer {
           driveController.y().whileTrue(redMotor2.sysIDQuasistatic(Direction.kReverse));
         }
 
-        //Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
+        Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
 
-        //turnNeoMotor.ignoringDisable(true).schedule();
-                break;
+        turnNeoMotor.ignoringDisable(true).schedule();
     }
     logf("Finished Creating RobotContainer\n");
     if (Config.robotType != RobotType.Simulation) {
@@ -244,8 +242,6 @@ public class RobotContainer {
     return 0.0;
   }
 
-  
-
   // Play with string encoder
   AnalogInput analog = new AnalogInput(3);
 
@@ -257,11 +253,11 @@ public class RobotContainer {
   }
 
   public void setLedsLeftX() {
-      int num = Config.numberOfLeds - 6;
-      double value = RobotContainer.driveController.getLeftX();
-      if (value < 0.0)
-        value = 0.0;
-      leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
+    int num = Config.numberOfLeds - 6;
+    double value = RobotContainer.driveController.getLeftX();
+    if (value < 0.0)
+      value = 0.0;
+    leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
   }
 
   // Command h = Commands.run(() -> logf("Hit\f"));
@@ -299,15 +295,15 @@ public class RobotContainer {
   }
 
   // Command leftxToLeds = new InstantCommand(
-  //    new Runnable() {
-  //      public void run() {
-  //        int num = Config.numberOfLeds - 6;
-  //        double value = RobotContainer.driveController.getLeftX();
-  //        if (value < 0.0)
-  //          value = 0.0;
-  //        leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
-  //      }
-  //  });
+  // new Runnable() {
+  // public void run() {
+  // int num = Config.numberOfLeds - 6;
+  // double value = RobotContainer.driveController.getLeftX();
+  // if (value < 0.0)
+  // value = 0.0;
+  // leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
+  // }
+  // });
 
   Command zeroYawCommand = new InstantCommand(
       new Runnable() {
@@ -329,9 +325,9 @@ public class RobotContainer {
                 }
               }));
     }
-     
+
     driveController.back().whileTrue(zeroYawCommand);
- 
+
     if (motorKraken != null && testKraken) {
       driveController.a().whileTrue(motorKraken.sysIdDynamic(Direction.kForward));
       driveController.b().whileTrue(motorKraken.sysIdDynamic(Direction.kReverse));
@@ -340,28 +336,29 @@ public class RobotContainer {
     }
     if (motorSparkMax != null) {
       driveController.a().whileTrue(motorSparkMax.sysIdDynamic(Direction.kForward));
-      
+
       driveController.b().whileTrue(motorSparkMax.sysIdDynamic(Direction.kReverse));
-      
+
       driveController.x().whileTrue(motorSparkMax.sysIdQuasistatic(Direction.kForward));
-      
+
       driveController.y().whileTrue(motorSparkMax.sysIdQuasistatic(Direction.kReverse));
     }
   }
-    
 
   // Initializes a DigitalInput
   DigitalInput input = new DigitalInput(Robot.config.DIOTestTrigger);
   // Creates a Debouncer in "both" mode.
   Debouncer m_debouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
-  /* 
-  void deB() {
-    // If false the signal must go true for at least .1 seconds before read
-    if (m_debouncer.calculate(input.get())) {
-      logf("Input Changed:%b\n", input.get());
-    }
-    */
-  //}
+  /*
+   * void deB() {
+   * // If false the signal must go true for at least .1 seconds before read
+   * if (m_debouncer.calculate(input.get())) {
+   * logf("Input Changed:%b\n", input.get());
+   * }
+   */
+  // }
 
-  public Optional<RobotRunnable> robot() { return runnableRobot; }
+  public Optional<RobotRunnable> robot() {
+    return runnableRobot;
+  }
 }
