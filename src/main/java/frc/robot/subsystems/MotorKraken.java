@@ -53,7 +53,7 @@ public class MotorKraken extends SubsystemBase {
   // Start at position 0, use slot 2 for position motion magic
   private final VoltageOut voltage = new VoltageOut(0);
 
-  private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
+  //private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
   private final SysIdRoutine sysId;
 
   @AutoLog
@@ -194,12 +194,13 @@ public class MotorKraken extends SubsystemBase {
       testCases();
     }
 
-    inputs.position = motor.getPosition().getValue();
+    /*inputs.position = motor.getPosition().getValue();
     inputs.velocity = motor.getVelocity().getValue();
     inputs.appliedVolts = motor.getMotorVoltage().getValue();
     inputs.currentStatorAmps = motor.getStatorCurrent().getValue();
     inputs.currentSupplyAmps = motor.getSupplyCurrent().getValue();
-    Logger.processInputs(name, inputs);
+    */
+    //Logger.processInputs(name);
   }
 
   enum Modes {

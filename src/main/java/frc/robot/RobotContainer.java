@@ -8,16 +8,29 @@ import java.util.Optional;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.sim.SparkFlexExternalEncoderSim;
+import com.revrobotics.spark.SparkFlexExternalEncoder;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -36,6 +49,7 @@ import frc.robot.subsystems.MotorFlex;
 import frc.robot.subsystems.MotorKraken;
 import frc.robot.subsystems.MotorSRX;
 import frc.robot.subsystems.MotorSparkMax;
+import frc.robot.subsystems.NeoMotor;
 import frc.robot.subsystems.PID;
 import frc.robot.subsystems.TestTriggers;
 
@@ -51,11 +65,14 @@ import frc.robot.subsystems.TestTriggers;
  */
 public class RobotContainer {
   private Optional<RobotRunnable> runnableRobot = Optional.empty();
+  public SlewRateLimiter neoMotorSlewRateLimiter = new SlewRateLimiter(.5);
   public static final CommandXboxController driveController = new CommandXboxController(2);
   private static final XboxController driveHID = driveController.getHID();
 
   public static LedSubsystem leds = new LedSubsystem();
   public DrivetrainSRX drivetrainSRX;
+
+  XboxController controller = new XboxController(2);
 
   private TestTriggers triggers = new TestTriggers();
   private CANcoder canCoder;
@@ -121,12 +138,17 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    double kP;
+    double kI;
+    double kD;
+    // PIDController pidNeo = new PIDController(kP, kI, kD);
+
     // Set the default Robot Mode to Cube
     switch (Config.robotType) {
       case Simulation:
         break;
       case BlondeMini:
-       runnableRobot = Optional.of(new BlondeMini(driveHID));
+        runnableRobot = Optional.of(new BlondeMini(driveHID));
         break;
       case DarrylMini:
         runnableRobot = Optional.of(new DarrylMini());
@@ -145,26 +167,26 @@ public class RobotContainer {
         motorSRX = new MotorSRX("SRX", 14, 0, true);
         motorSRX.setupForTestCasesRedMotor();
         setMotorForTest();
-       // Code to display CANCoder value
+        // Code to display CANCoder value
         canCoder = new CANcoder(20);
         Command miniCancoder = Commands.run(
             () -> SmartDashboard.putNumber("CanCo", canCoder.getPosition().getValueAsDouble()));
         miniCancoder.ignoringDisable(true).schedule();
-         
+
         // Code to have leds reflect value of LeftX
         Command leftxToLeds = Commands.run(
-          () -> setLedsLeftX());
+            () -> setLedsLeftX());
         leftxToLeds.ignoringDisable(true).schedule();
         break;
       case Squidward:
-      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
-      
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
+
         // Uses Talon SRX for drive train())
         break;
       case Kevin: // Ginger Bread Robot
         // Uses Talon SRX for drive train
-       
-      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
+
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
         break;
       case Wooly: // Big ball shooter
         // Uses Jaguars for drive train and shooter
@@ -182,10 +204,10 @@ public class RobotContainer {
         new DrivetrainTestSwerve(driveHID);
         break;
       case MiniIsaac:
-        //MotorFlex neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
+        MotorFlex neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
         MotorSRX redMotor2 = new MotorSRX("RedMotor", 10, -1, true);
-        //SparkMaxConfig motorConfig = new SparkMaxConfig();
-        //PID neoPIDMotionMagic = new PID("neoMotorPID", 1, 0, 0, 0, 0, -1, 1, false); 
+        SparkMaxConfig motorConfig = new SparkMaxConfig();
+        PID neoPIDMotionMagic = new PID("neoMotorPID", 1, 0, 0, 0, 0, -1, 1, false);
 
         if (redMotor2 != null) {
           driveController.a().whileTrue(redMotor2.sysIdDynamic(Direction.kForward));
@@ -197,7 +219,7 @@ public class RobotContainer {
         //Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
 
         //turnNeoMotor.ignoringDisable(true).schedule();
-                break;
+        break;
     }
     logf("Finished Creating RobotContainer\n");
     if (Config.robotType != RobotType.Simulation) {
@@ -234,11 +256,11 @@ public class RobotContainer {
   }
 
   public void setLedsLeftX() {
-      int num = Config.numberOfLeds - 6;
-      double value = RobotContainer.driveController.getLeftX();
-      if (value < 0.0)
-        value = 0.0;
-      leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
+    int num = Config.numberOfLeds - 6;
+    double value = RobotContainer.driveController.getLeftX();
+    if (value < 0.0)
+      value = 0.0;
+    leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
   }
 
   // Command h = Commands.run(() -> logf("Hit\f"));
@@ -276,15 +298,15 @@ public class RobotContainer {
   }
 
   // Command leftxToLeds = new InstantCommand(
-  //     new Runnable() {
-  //       public void run() {
-  //         int num = Config.numberOfLeds - 6;
-  //         double value = RobotContainer.driveController.getLeftX();
-  //         if (value < 0.0)
-  //           value = 0.0;
-  //         leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
-  //       }
-  //    });
+  // new Runnable() {
+  // public void run() {
+  // int num = Config.numberOfLeds - 6;
+  // double value = RobotContainer.driveController.getLeftX();
+  // if (value < 0.0)
+  // value = 0.0;
+  // leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
+  // }
+  // });
 
   Command zeroYawCommand = new InstantCommand(
       new Runnable() {
@@ -292,7 +314,6 @@ public class RobotContainer {
           Robot.yawProvider.zeroYaw();
         }
       });
-
 
   // Trigger tr = new Trigger(triggers::getSwitch);
 
@@ -307,15 +328,8 @@ public class RobotContainer {
                 }
               }));
     }
-    driveController.back()
-        .whileTrue(
-            new InstantCommand(
-                new Runnable() {
-                  public void run() {
-                    Robot.yawProvider.zeroYaw();
-                    logf("Hit back on Game Pad\n");
-                  }
-                }));
+
+    driveController.back().whileTrue(zeroYawCommand);
 
     if (motorKraken != null && testKraken) {
       driveController.a().whileTrue(motorKraken.sysIdDynamic(Direction.kForward));
@@ -325,11 +339,11 @@ public class RobotContainer {
     }
     if (motorSparkMax != null) {
       driveController.a().whileTrue(motorSparkMax.sysIdDynamic(Direction.kForward));
-      
+
       driveController.b().whileTrue(motorSparkMax.sysIdDynamic(Direction.kReverse));
-      
+
       driveController.x().whileTrue(motorSparkMax.sysIdQuasistatic(Direction.kForward));
-      
+
       driveController.y().whileTrue(motorSparkMax.sysIdQuasistatic(Direction.kReverse));
     }
   }
@@ -338,13 +352,16 @@ public class RobotContainer {
   DigitalInput input = new DigitalInput(Robot.config.DIOTestTrigger);
   // Creates a Debouncer in "both" mode.
   Debouncer m_debouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
+  /*
+   * void deB() {
+   * // If false the signal must go true for at least .1 seconds before read
+   * if (m_debouncer.calculate(input.get())) {
+   * logf("Input Changed:%b\n", input.get());
+   * }
+   */
+  // }
 
-  void deB() {
-    // If false the signal must go true for at least .1 seconds before read
-    if (m_debouncer.calculate(input.get())) {
-      logf("Input Changed:%b\n", input.get());
-    }
+  public Optional<RobotRunnable> robot() {
+    return runnableRobot;
   }
-
-  public Optional<RobotRunnable> robot() { return runnableRobot; }
 }
