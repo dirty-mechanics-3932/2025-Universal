@@ -6,6 +6,8 @@ import static frc.robot.utilities.Util.logf;
 import java.util.Optional;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -210,13 +212,14 @@ public class RobotContainer {
         if (redMotor2 != null) {
           driveController.a().whileTrue(redMotor2.sysIdDynamic(Direction.kForward));
           driveController.b().whileTrue(redMotor2.sysIdDynamic(Direction.kReverse));
-          driveController.x().whileTrue(redMotor2.sysIDQuasistatic(Direction.kForward));
-          driveController.y().whileTrue(redMotor2.sysIDQuasistatic(Direction.kReverse));
+          driveController.x().whileTrue(redMotor2.sysIdQuasistatic(Direction.kForward));
+          driveController.y().whileTrue(redMotor2.sysIdQuasistatic(Direction.kReverse));
         }
 
-        Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
+        //Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
 
-        turnNeoMotor.ignoringDisable(true).schedule();
+        //turnNeoMotor.ignoringDisable(true).schedule();
+        break;
     }
     logf("Finished Creating RobotContainer\n");
     if (Config.robotType != RobotType.Simulation) {
