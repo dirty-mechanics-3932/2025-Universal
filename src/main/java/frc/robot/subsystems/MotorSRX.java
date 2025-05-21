@@ -208,10 +208,10 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     motor.set(ControlMode.Velocity, rawSensorVelocity);
   }
 
-  public void setVoltage(Voltage value) {
-    double numericValue = value.in(Volts);
-    motor.set(ControlMode.PercentOutput, numericValue / motor.getBusVoltage());
-  }
+  // public void setVoltage(Voltage value) {
+  //   double numericValue = value.in(Volts);
+  //   motor.set(ControlMode.PercentOutput, numericValue / motor.getBusVoltage());
+  // }
 
   public void setInverted(boolean invert) {
     motor.setInverted(invert);
