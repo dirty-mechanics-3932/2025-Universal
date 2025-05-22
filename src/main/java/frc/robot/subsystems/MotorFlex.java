@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Robot.robotContainer;
 import static frc.robot.utilities.Util.logf;
 import static frc.robot.utilities.Util.round2;
 
@@ -23,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.utilities.Util;
 
 /**
  * SPARK MAX controllers are initialized over CAN by constructing a SparkMax
@@ -413,14 +413,14 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
                 }
                 break;
             case SPEED:
-                value = robotContainer.getSpeedFromTriggers();
+                value = Util.getSpeedFromTriggers(driveController);
                 if (Math.abs(value) > 0.05)
                     logf("Set Test speed:%.2f\n", value);
                 setP = value;
                 setSpeed(value);
                 break;
         }
-        RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);    
+        // RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
     }
 
     void testTimes() {

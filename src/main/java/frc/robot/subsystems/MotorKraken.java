@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.utilities.Util;
 
 // Motion Magic for Kraken has some code at
 // https://github.com/CrossTheRoadElec/Phoenix6-Examples/blob/main/java/MotionMagic/src/main/java/frc/robot/Robot.java
@@ -260,7 +261,7 @@ public class MotorKraken extends SubsystemBase {
         }
         break;
       case SPEED:
-        value = robotContainer.getSpeedFromTriggers();
+        value = Util.getSpeedFromTriggers(driveController);
         if (Math.abs(value) > 0.05) {
           if (setP != value)
             logf("Set Test speed:%.2f\n", value);
@@ -269,7 +270,7 @@ public class MotorKraken extends SubsystemBase {
         setSpeed(value);
         break;
     }
-    RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
+    // RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */

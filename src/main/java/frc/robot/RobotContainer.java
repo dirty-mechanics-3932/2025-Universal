@@ -149,7 +149,7 @@ public class RobotContainer {
       case Simulation:
         break;
       case BlondeMini:
-        runnableRobot = Optional.of(new BlondeMini(driveHID));
+        runnableRobot = Optional.of(new BlondeMini(driveController));
         break;
       case DarrylMini:
         runnableRobot = Optional.of(new DarrylMini());
@@ -181,21 +181,21 @@ public class RobotContainer {
         runnableRobot = Optional.of(new Sibling2025(driveHID));
         break;
       case MiniIsaac:
-        MotorFlex neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
-        MotorSRX redMotor2 = new MotorSRX("RedMotor", 10, -1, true);
-        SparkMaxConfig motorConfig = new SparkMaxConfig();
-        PID neoPIDMotionMagic = new PID("neoMotorPID", 1, 0, 0, 0, 0, -1, 1, false);
+        // MotorFlex neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
+        // MotorSRX redMotor2 = new MotorSRX("RedMotor", 10, -1, true);
+        // SparkMaxConfig motorConfig = new SparkMaxConfig();
+        // PID neoPIDMotionMagic = new PID("neoMotorPID", 1, 0, 0, 0, 0, -1, 1, false);
 
-        if (redMotor2 != null) {
-          driveController.a().whileTrue(redMotor2.sysIdDynamic(Direction.kForward));
-          driveController.b().whileTrue(redMotor2.sysIdDynamic(Direction.kReverse));
-          driveController.x().whileTrue(redMotor2.sysIDQuasistatic(Direction.kForward));
-          driveController.y().whileTrue(redMotor2.sysIDQuasistatic(Direction.kReverse));
-        }
+        // if (redMotor2 != null) {
+        //   driveController.a().whileTrue(redMotor2.sysIdDynamic(Direction.kForward));
+        //   driveController.b().whileTrue(redMotor2.sysIdDynamic(Direction.kReverse));
+        //   driveController.x().whileTrue(redMotor2.sysIDQuasistatic(Direction.kForward));
+        //   driveController.y().whileTrue(redMotor2.sysIDQuasistatic(Direction.kReverse));
+        // }
 
-        Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
+        // Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
 
-        turnNeoMotor.ignoringDisable(true).schedule();
+        // turnNeoMotor.ignoringDisable(true).schedule();
     }
     logf("Finished Creating RobotContainer\n");
     if (Config.robotType != RobotType.Simulation) {

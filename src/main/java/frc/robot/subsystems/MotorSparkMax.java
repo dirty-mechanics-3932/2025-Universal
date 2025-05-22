@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.utilities.Util;
 
 import com.revrobotics.spark.SparkRelativeEncoder;
 
@@ -444,7 +445,7 @@ public class MotorSparkMax extends SubsystemBase {
                 }
                 break;
             case SPEED:
-                value = robotContainer.getSpeedFromTriggers();
+                value = Util.getSpeedFromTriggers(driveController);
                 if (Math.abs(value) > 0.15) {
                     if (setPoint != value)
                         logf("%s Set speed:%.2f\n", name, value);
@@ -456,7 +457,7 @@ public class MotorSparkMax extends SubsystemBase {
 
                 break;
         }
-        RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
+        // RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
         SmartDashboard.putNumber("SetP", setPoint);
     }
 

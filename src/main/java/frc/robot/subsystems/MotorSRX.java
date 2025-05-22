@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.utilities.Util;
 import edu.wpi.first.units.measure.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -470,24 +471,24 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
         setP = 0.0;
         break;
       case SPEED:
-        value = robotContainer.getSpeedFromTriggers();
+        value = Util.getSpeedFromTriggers(driveController);
         if (Math.abs(value) > 0.05)
           logf("Set Test speed:%.2f\n", value);
         setSpeed(value);
         setP = value;
         break;
     }
-    RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
   }
+
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return run(() -> setSpeed(0.0))
-      .withTimeout(.5)
-      .andThen(sysID.dynamic(direction).withTimeout(5));
+        .withTimeout(.5)
+        .andThen(sysID.dynamic(direction).withTimeout(5));
   }
 
   public Command sysIDQuasistatic(SysIdRoutine.Direction direction) {
     return run(() -> setSpeed(0.0))
-      .withTimeout(.5)
-      .andThen(sysID.quasistatic(direction).withTimeout(5));
+        .withTimeout(.5)
+        .andThen(sysID.quasistatic(direction).withTimeout(5));
   }
 }
