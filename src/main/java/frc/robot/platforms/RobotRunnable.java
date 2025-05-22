@@ -1,11 +1,14 @@
 package frc.robot.platforms;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Robot;
 import frc.robot.utilities.Util;
 
 public interface RobotRunnable {
     public default void log(String s) { Util.logf("(%s) %s", robotName(), s); }
     public default void logf(String pattern, Object... arguments) { Util.logf("(%s) " + pattern, robotName(), arguments); }
+    public default void logfPeriodic(String pattern, Object... arguments) { if (Robot.count % 10 == 0) { logf(pattern, arguments); } }
+
     public default double getTriggerValue(CommandXboxController controller) { return Util.getSpeedFromTriggers(controller); }
 
     public default String robotName() { return "robotname-undefined"; }
