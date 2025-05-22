@@ -37,7 +37,7 @@ import frc.robot.subsystems.YawProvider;
  * https://docs.wpilib.org/en/latest/docs/zero-to-robot/step-2/wpilib-setup.html
  *
  * <p>
- * Sometimes the garbage collector won’t run frequently enough to keep up with
+ * Sometimes the garbage collector won't run frequently enough to keep up with
  * the quantity of
  * allocations. As Java provides a way to trigger a garbage collection to occur,
  * running it on a

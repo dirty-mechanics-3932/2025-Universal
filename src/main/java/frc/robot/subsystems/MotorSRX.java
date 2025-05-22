@@ -381,7 +381,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   // slot0.kD = 0.5; // A velocity error of 1 rps results in 0.5 V output
 
   // Setting the Feed Forward for a velcity PID
-  // Using Tuner (Self-test Snapshot or Plotter), we’ve measured a peak velocity
+  // Using Tuner (Self-test Snapshot or Plotter), we've measured a peak velocity
   // of 9326 native units per 100ms at 100% output.
   // Get peak velocity - this can also be retrieved using
   // getSelectedSensorVelocity (routine or VI).
@@ -393,10 +393,10 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   // For our mechanism, we will typically be running the motor ~75% output.
   // We then use Tuner (Self-test Snapshot or Plotter) to measure our velocity -
   // in this case, we measure a velocity of 7112 native units per 100ms.
-  // Now let’s calculate a Feed-forward gain so that 75% motor output is
+  // Now let's calculate a Feed-forward gain so that 75% motor output is
   // calculated when the requested speed is 7112 native units per 100ms.
   // F-gain = (75% X 1023) / 7112 F-gain = 0.1079
-  // Let’s check our math, if the target speed is 7112 native units per 100ms,
+  // Let's check our math, if the target speed is 7112 native units per 100ms,
   // Closed-loop output will be (0.1079 X 7112) => 767.38 (75% of full forward).
 
   public void setupForTestCasesRedMotor() {
