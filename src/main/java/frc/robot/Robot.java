@@ -54,7 +54,6 @@ import frc.robot.subsystems.YawProvider;
  * }
  */
 public class Robot extends LoggedRobot {
-  
   public static int count = 0;
   public static RobotContainer robotContainer;
   public static Optional<Alliance> alliance;
@@ -84,7 +83,6 @@ public class Robot extends LoggedRobot {
 
     var robotPlatform = robotContainer.robot();
     if (robotPlatform.isPresent()) {
-      log("entering robotInit in Robot.java");
       robotPlatform.get().robotInit();
     }
   }
@@ -144,7 +142,6 @@ public class Robot extends LoggedRobot {
 
     var robotPlatform = robotContainer.robot();
     if (robotPlatform.isPresent()) {
-      //log("teleopperiodic in Robot.java\n");
       robotPlatform.get().teleopPeriodic();
     }
   }

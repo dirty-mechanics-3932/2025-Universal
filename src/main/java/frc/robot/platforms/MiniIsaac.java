@@ -56,24 +56,17 @@ public class MiniIsaac implements RobotRunnable {
 
     @Override
     public void teleopInit() {
-        turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
-        turnNeoMotor.ignoringDisable(true);
+        
     }
 
     @Override
     public void teleopPeriodic() {
         
-        // if (m_driveController.getLeftX() >= 0) {
-        double sp = getSpeedFromTriggers();
-        redMotor2.setSpeed(sp);
-        // }
-        // if (redMotor2 != null) {
+        neoMotor.setSpeed(getSpeedFromTriggers());
 
-      //  m_driveController.a().whileTrue(Commands.run(() -> log("button pressed")));
-      //  m_driveController.a().whileTrue(redMotor2.sysIdDynamic(Direction.kForward));
-      //  m_driveController.b().whileTrue(redMotor2.sysIdDynamic(Direction.kReverse));
-      //  m_driveController.x().whileTrue(redMotor2.sysIDQuasistatic(Direction.kForward));
-      //  m_driveController.y().whileTrue(redMotor2.sysIDQuasistatic(Direction.kReverse));
-        // }
+        m_driveController.a().whileTrue(redMotor2.sysIdDynamic(Direction.kForward));
+        m_driveController.b().whileTrue(redMotor2.sysIdDynamic(Direction.kReverse));
+        m_driveController.x().whileTrue(redMotor2.sysIdQuasistatic(Direction.kForward));
+        m_driveController.y().whileTrue(redMotor2.sysIdQuasistatic(Direction.kReverse));
     }
 }
