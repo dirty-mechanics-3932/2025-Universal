@@ -56,14 +56,12 @@ public class MiniIsaac implements RobotRunnable {
 
     @Override
     public void teleopInit() {
-        logf("This is a test");
         turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
         turnNeoMotor.ignoringDisable(true);
     }
 
     @Override
     public void teleopPeriodic() {
-        logf("This is a test\n");
         
         // if (m_driveController.getLeftX() >= 0) {
         double sp = getSpeedFromTriggers();
