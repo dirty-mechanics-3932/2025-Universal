@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Config.RobotType;
 import frc.robot.platforms.DarrylMini;
+import frc.robot.platforms.MiniIsaac;
 import frc.robot.platforms.BlondeMini;
 import frc.robot.platforms.MiniMini;
 import frc.robot.platforms.ParadeSrxDriveRobots;
@@ -204,21 +205,7 @@ public class RobotContainer {
         new DrivetrainTestSwerve(driveHID);
         break;
       case MiniIsaac:
-        MotorFlex neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
-        MotorSRX redMotor2 = new MotorSRX("RedMotor", 10, -1, true);
-        SparkMaxConfig motorConfig = new SparkMaxConfig();
-        PID neoPIDMotionMagic = new PID("neoMotorPID", 1, 0, 0, 0, 0, -1, 1, false);
-
-        if (redMotor2 != null) {
-          driveController.a().whileTrue(redMotor2.sysIdDynamic(Direction.kForward));
-          driveController.b().whileTrue(redMotor2.sysIdDynamic(Direction.kReverse));
-          driveController.x().whileTrue(redMotor2.sysIdQuasistatic(Direction.kForward));
-          driveController.y().whileTrue(redMotor2.sysIdQuasistatic(Direction.kReverse));
-        }
-
-        //Command turnNeoMotor = Commands.run(() -> neoMotor.setSpeed(getSpeedFromTriggers()));
-
-        //turnNeoMotor.ignoringDisable(true).schedule();
+        runnableRobot = Optional.of(new MiniIsaac());
         break;
     }
     logf("Finished Creating RobotContainer\n");
