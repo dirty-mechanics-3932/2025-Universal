@@ -9,7 +9,8 @@ public class ParadeSrxDriveRobots implements RobotRunnable {
      private final XboxController hid; 
      private String robotName; 
      public ParadeSrxDriveRobots(XboxController hid, String robotName){
-        drivetrainSRX = new DrivetrainSRX(hid); 
+        //drivetrainSRX = new DrivetrainSRX(hid); 
+        drivetrainSRX = null;
         this.hid = hid;
         this.robotName = robotName;
     }
