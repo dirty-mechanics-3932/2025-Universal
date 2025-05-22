@@ -5,20 +5,7 @@ import static frc.robot.utilities.Util.logf;
 
 import java.util.Optional;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.sim.SparkFlexExternalEncoderSim;
-import com.revrobotics.spark.SparkFlexExternalEncoder;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -27,10 +14,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -46,15 +30,11 @@ import frc.robot.platforms.RobotRunnable;
 import frc.robot.platforms.Sibling2025;
 import frc.robot.subsystems.DrivetrainJaguar;
 import frc.robot.subsystems.DrivetrainSRX;
-import frc.robot.subsystems.DrivetrainSpark;
-import frc.robot.subsystems.DrivetrainTestSwerve;
 import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.MotorFlex;
 import frc.robot.subsystems.MotorKraken;
 import frc.robot.subsystems.MotorSRX;
 import frc.robot.subsystems.MotorSparkMax;
-import frc.robot.subsystems.NeoMotor;
-import frc.robot.subsystems.PID;
 import frc.robot.subsystems.TestTriggers;
 
 /**
@@ -199,10 +179,10 @@ public class RobotContainer {
 
   // TODO: Not used. Remove?
   // public void setLedsForStringEncoder() {
-  //   int v = (int) driveController.getHID().getPOV() / 4;
-  //   leds.setOneLed(6, v, v, v);
-  //   SmartDashboard.putNumber("Volts", analog.getVoltage());
-  //   SmartDashboard.putNumber("Value", analog.getValue());
+  // int v = (int) driveController.getHID().getPOV() / 4;
+  // leds.setOneLed(6, v, v, v);
+  // SmartDashboard.putNumber("Volts", analog.getVoltage());
+  // SmartDashboard.putNumber("Value", analog.getValue());
   // }
 
   // Command h = Commands.run(() -> logf("Hit\f"));
@@ -296,10 +276,10 @@ public class RobotContainer {
   Debouncer m_debouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
 
   // void deB() {
-  //   // If false the signal must go true for at least .1 seconds before read
-  //   if (m_debouncer.calculate(input.get())) {
-  //     logf("Input Changed:%b\n", input.get());
-  //   }
+  // // If false the signal must go true for at least .1 seconds before read
+  // if (m_debouncer.calculate(input.get())) {
+  // logf("Input Changed:%b\n", input.get());
+  // }
   // }
 
   public Optional<RobotRunnable> robot() {

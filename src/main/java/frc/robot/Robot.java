@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import static frc.robot.utilities.Util.log;
 import static frc.robot.utilities.Util.logf;
 import static frc.robot.utilities.Util.round2;
 import static frc.robot.utilities.Util.splashScreen;
@@ -24,7 +23,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.platforms.RobotRunnable;
 import frc.robot.subsystems.YawProvider;
 
 // import dev.doglog.DogLog;
@@ -185,8 +183,6 @@ public class Robot extends LoggedRobot {
       robotPlatform.get().disabledExit();
     }
   }
-
-  
 
   // @Override
   // public void simulationPeriodic() {
