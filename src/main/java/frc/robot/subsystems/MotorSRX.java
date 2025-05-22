@@ -9,6 +9,28 @@ import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.Robot.robotContainer;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+//import static edu.wpi.first.units.Units.RotationsPerSecond;
+//import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+//import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -47,6 +69,21 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   private boolean enableTestMode = false;
   public final SysIdRoutine sysID;
 
+  //added for rotation conversion factor
+  private static double ticksPerRevolution = 4096; 
+
+  private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
+  private final SysIdRoutine sysId;
+
+  @AutoLog
+  public static class MotorSRXInputs {
+    public Angle position = Radians.zero();
+    public AngularVelocity velocity = RadiansPerSecond.zero();
+    public Voltage appliedVolts = Volts.zero();
+    public Current currentSupplyAmps = Amps.zero();
+    public Current currentStatorAmps = Amps.zero();
+  }
+
   public MotorSRX(String name, int id, int followId, boolean logging) {
 
     sysID = new SysIdRoutine(
@@ -63,6 +100,15 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     myLogging = logging;
     motor = new WPI_TalonSRX(this.id);
     errorCode = motor.configFactoryDefault();
+
+    // run sysid routine
+    sysId = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            null,
+            null,
+            Time.ofBaseUnits(3.5, Seconds),
+            (state) -> Logger.recordOutput(name + "/SysIdState", state.toString())),
+        new SysIdRoutine.Mechanism((voltage) -> setVoltage(voltage), null, this));
 
     if (errorCode != ErrorCode.OK) {
       logf("????????? Motor %s Error: %s ??????????\n", name, errorCode);
@@ -88,6 +134,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
       logf(
           "Created %s motor id:%d firmware:%d voltage:%.1f\n",
           name, id, motor.getFirmwareVersion(), motor.getBusVoltage());
+
   }
 
   public void setLogging(boolean value) {
@@ -110,9 +157,10 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     enableTestMode = value;
   }
 
+  // returns position in rotations
   public double getPos() {
-    return motor.getSelectedSensorPosition();
-  }
+    return motor.getSelectedSensorPosition() / ticksPerRevolution;
+}
 
   public void enableLimitSwitch(boolean forward, boolean reverse) {
     if (forward)
@@ -139,21 +187,31 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
       followMotor.setNeutralMode(mode ? NeutralMode.Brake : NeutralMode.Coast);
   }
 
+  // setting position in rotations
   public void setPos(double position) {
     lastPos = position;
+    double rawSensorPosition = position * ticksPerRevolution;
     motor.selectProfileSlot(0, 0);
-    motor.set(ControlMode.Position, position);
+    motor.set(ControlMode.Position, rawSensorPosition);
   }
 
+  // setting motion magic position in rotations
   public void setPosMM(double position) {
-    motor.set(ControlMode.MotionMagic, position);
+    double rawSensorPosition = position * ticksPerRevolution;
+    motor.set(ControlMode.MotionMagic, rawSensorPosition);
   }
 
+  // setting velocity in rotiations per second (RPM)
   public void setVelocity(double velocity) {
-    // logf("!!!! Set Velocity for %s to %.0f\n", name, velocity);
+    double rawSensorVelocity = (velocity * ticksPerRevolution) / 600;
     motor.selectProfileSlot(1, 0);
-    motor.set(ControlMode.Velocity, velocity);
+    motor.set(ControlMode.Velocity, rawSensorVelocity);
   }
+
+  // public void setVoltage(Voltage value) {
+  //   double numericValue = value.in(Volts);
+  //   motor.set(ControlMode.PercentOutput, numericValue / motor.getBusVoltage());
+  // }
 
   public void setInverted(boolean invert) {
     motor.setInverted(invert);
@@ -166,9 +224,11 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     return lastSpeed;
   }
 
+  // returns velocity in RPM
   public double getActualVelocity() {
-    return motor.getSelectedSensorVelocity(0);
-  }
+    double rawSensorVelocity = motor.getSelectedSensorVelocity(0); // Velocity in ticks per 100ms
+    return (rawSensorVelocity / ticksPerRevolution) * 600;
+}
 
   public int getAnalogPos() {
     return motor.getSensorCollection().getAnalogIn() + 4096 - 1078;
@@ -181,9 +241,18 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     if (count % numberCyclesForDisplay == 0)
       updateSmart();
 
-    if (enableTestMode)
+    if (enableTestMode) {
       testCases();
+
+    }
+    inputs.position = Rotations.of(getPos());
+    inputs.velocity = RPM.of(getActualVelocity());
+    inputs.appliedVolts = Volts.of(motor.getMotorOutputVoltage());
+    inputs.currentStatorAmps = Amps.of(motor.getSupplyCurrent());
+    inputs.currentSupplyAmps = Amps.of(motor.getStatorCurrent());
+    Logger.processInputs(name, inputs);
   }
+
 
   public void logPeriodic() {
     double pos = motor.getSensorCollection().getQuadraturePosition();
@@ -381,7 +450,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   // slot0.kD = 0.5; // A velocity error of 1 rps results in 0.5 V output
 
   // Setting the Feed Forward for a velcity PID
-  // Using Tuner (Self-test Snapshot or Plotter), we’ve measured a peak velocity
+  // Using Tuner (Self-test Snapshot or Plotter), we've measured a peak velocity
   // of 9326 native units per 100ms at 100% output.
   // Get peak velocity - this can also be retrieved using
   // getSelectedSensorVelocity (routine or VI).
@@ -393,10 +462,10 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   // For our mechanism, we will typically be running the motor ~75% output.
   // We then use Tuner (Self-test Snapshot or Plotter) to measure our velocity -
   // in this case, we measure a velocity of 7112 native units per 100ms.
-  // Now let’s calculate a Feed-forward gain so that 75% motor output is
+  // Now let's calculate a Feed-forward gain so that 75% motor output is
   // calculated when the requested speed is 7112 native units per 100ms.
   // F-gain = (75% X 1023) / 7112 F-gain = 0.1079
-  // Let’s check our math, if the target speed is 7112 native units per 100ms,
+  // Let's check our math, if the target speed is 7112 native units per 100ms,
   // Closed-loop output will be (0.1079 X 7112) => 767.38 (75% of full forward).
 
   public void setupForTestCasesRedMotor() {
@@ -479,15 +548,18 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     }
     RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
   }
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+
+  /** Returns a command to run a quasistatic test in the specified direction. */
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return run(() -> setSpeed(0.0))
-      .withTimeout(.5)
-      .andThen(sysID.dynamic(direction).withTimeout(5));
+        .withTimeout(0.5)
+        .andThen(sysId.quasistatic(direction));
   }
 
-  public Command sysIDQuasistatic(SysIdRoutine.Direction direction) {
+  /** Returns a command to run a dynamic test in the specified direction. */
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return run(() -> setSpeed(0.0))
-      .withTimeout(.5)
-      .andThen(sysID.quasistatic(direction).withTimeout(5));
+        .withTimeout(0.5)
+        .andThen(sysId.dynamic(direction).withTimeout(1));
   }
 }

@@ -6,6 +6,8 @@ import static frc.robot.utilities.Util.logf;
 import java.util.Optional;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import com.ctre.phoenix6.hardware.CANcoder;
