@@ -9,6 +9,8 @@ import java.util.List;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class Config {
+    public static final int DRIVE_CONTROLLER_PORT = 2;
+
     public enum RobotType {
         MiniKeith, BlondeMini, Squidward, Kevin, Wooly, Mando, Simulation, DarrylMini, MiniMini, Sibling2025, MiniIsaac
     };

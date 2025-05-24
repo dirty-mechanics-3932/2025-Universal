@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.platforms.RobotRunnable;
 import frc.robot.subsystems.YawProvider;
 
 // import dev.doglog.DogLog;
@@ -185,8 +184,6 @@ public class Robot extends LoggedRobot {
       robotPlatform.get().disabledExit();
     }
   }
-
-  
 
   // @Override
   // public void simulationPeriodic() {

@@ -1,47 +1,37 @@
 package frc.robot.platforms;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.MotorSparkMax;
 
 public class BlondeMini implements RobotRunnable {
-    private final DrivetrainSRX drivetrainSRX;
-    private final MotorSparkMax motorSparkMax;
-    private final XboxController hid;
+  // TODO: Unused?
+  // private final DrivetrainSRX m_drivetrainSRX;
+  private final MotorSparkMax m_motorSparkMax;
+  private final CommandXboxController m_controller;
 
-    public BlondeMini(XboxController hid){
-        motorSparkMax = new MotorSparkMax("TestMax", 20, -1, false, false); 
-        drivetrainSRX = new DrivetrainSRX(hid); 
-        this.hid = hid;
-    }
-    @Override
-    public String robotName() {
-        return "BlondeMini";
-    }
+  public BlondeMini(CommandXboxController controller) {
+    m_motorSparkMax = new MotorSparkMax("TestMax", 20, -1, controller, false, false);
+    // m_drivetrainSRX = new DrivetrainSRX(controller.getHID());
+    this.m_controller = controller;
+  }
 
-    @Override
-    public void robotInit() {
-        Command blondeMove = Commands.run(() -> motorSparkMax.setSpeed(getSpeedFromTriggers()), motorSparkMax);
-        blondeMove.ignoringDisable(true).schedule();
-    }
+  @Override
+  public String robotName() {
+    return "BlondeMini";
+  }
 
-    @Override 
-    public void testInit() {
-        motorSparkMax.setLogging(true);
-        motorSparkMax.setTestMode(true);
-    }
+  @Override
+  public void robotInit() {
+    Command blondeMove = Commands.run(() -> m_motorSparkMax.setSpeed(getTriggerValue(m_controller)), m_motorSparkMax);
+    blondeMove.ignoringDisable(true).schedule();
+  }
 
-    private double getSpeedFromTriggers() {
-        double leftValue = hid.getLeftTriggerAxis();
-        double rightValue = hid.getRightTriggerAxis();
-        if (leftValue > 0.05) {
-          return leftValue;
-        }
-        if (rightValue > 0.05) {
-          return -rightValue;
-        }
-        return 0.0;
-      }
+  @Override
+  public void testInit() {
+    m_motorSparkMax.setLogging(true);
+    m_motorSparkMax.setTestMode(true);
+  }
 }

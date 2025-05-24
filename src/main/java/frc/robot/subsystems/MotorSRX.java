@@ -46,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.utilities.Util;
 import edu.wpi.first.units.measure.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -58,6 +59,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   private WPI_TalonSRX motor;
   private WPI_TalonSRX followMotor;
   private String name;
+  private CommandXboxController controller;
   private int id;
   private int followId;
   private double lastSpeed = 0;
@@ -69,8 +71,8 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   private boolean enableTestMode = false;
   public final SysIdRoutine sysIDRedMotor;
 
-  //added for rotation conversion factor
-  private static double ticksPerRevolution = 4096; 
+  // added for rotation conversion factor
+  private static double ticksPerRevolution = 4096;
 
   private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
   private final SysIdRoutine sysIdRedMotor;
@@ -84,8 +86,8 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     public Current currentStatorAmps = Amps.zero();
   }
 
-  public MotorSRX(String name, int id, int followId, boolean logging) {
-
+  public MotorSRX(String name, int id, int followId, CommandXboxController controller, boolean logging) {
+    this.controller = controller;
     sysIDRedMotor = new SysIdRoutine(
         new SysIdRoutine.Config(
             null,
@@ -160,7 +162,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   // returns position in rotations
   public double getPos() {
     return motor.getSelectedSensorPosition() / ticksPerRevolution;
-}
+  }
 
   public void enableLimitSwitch(boolean forward, boolean reverse) {
     if (forward)
@@ -209,8 +211,8 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   }
 
   // public void setVoltage(Voltage value) {
-  //   double numericValue = value.in(Volts);
-  //   motor.set(ControlMode.PercentOutput, numericValue / motor.getBusVoltage());
+  // double numericValue = value.in(Volts);
+  // motor.set(ControlMode.PercentOutput, numericValue / motor.getBusVoltage());
   // }
 
   public void setInverted(boolean invert) {
@@ -228,7 +230,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   public double getActualVelocity() {
     double rawSensorVelocity = motor.getSelectedSensorVelocity(0); // Velocity in ticks per 100ms
     return (rawSensorVelocity / ticksPerRevolution) * 600;
-}
+  }
 
   public int getAnalogPos() {
     return motor.getSensorCollection().getAnalogIn() + 4096 - 1078;
@@ -242,7 +244,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
       updateSmart();
 
     if (enableTestMode) {
-      testCases();
+      testCases(controller);
 
     }
     inputs.position = Rotations.of(getPos());
@@ -252,7 +254,6 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     inputs.currentSupplyAmps = Amps.of(motor.getStatorCurrent());
     Logger.processInputs(name, inputs);
   }
-
 
   public void logPeriodic() {
     double pos = motor.getSensorCollection().getQuadraturePosition();
@@ -506,8 +507,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   boolean lastStart = false;
   double setP = 0;
 
-  void testCases() {
-    CommandXboxController driveController = RobotContainer.driveController;
+  void testCases(CommandXboxController driveController) {
     double value = 0.0;
     // Hiting the start button moves to the next control method
     boolean start = driveController.start().getAsBoolean();
@@ -539,24 +539,22 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
         setP = 0.0;
         break;
       case SPEED:
-        value = robotContainer.getSpeedFromTriggers();
+        value = Util.getSpeedFromTriggers(driveController);
         if (Math.abs(value) > 0.05)
           logf("Set Test speed:%.2f\n", value);
         setSpeed(value);
         setP = value;
         break;
     }
-    RobotContainer.setLedsForTestMode(mode.ordinal(), Modes.values().length);
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistaticRedMotor(SysIdRoutine.Direction direction) {
     return run(() -> setSpeed(0.0))
         .withTimeout(0.5)
-        .andThen(sysIdRedMotor.quasistatic(direction));
+        .andThen(sysIdRedMotor.quasistatic(direction).withTimeout(5));
   }
 
-  /** Returns a command to run a dynamic test in the specified direction. */
   public Command sysIdDynamicRedMotor(SysIdRoutine.Direction direction) {
     return run(() -> setSpeed(0.0))
         .withTimeout(0.5)

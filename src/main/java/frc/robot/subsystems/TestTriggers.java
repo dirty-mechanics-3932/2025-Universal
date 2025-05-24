@@ -8,8 +8,7 @@ import frc.robot.Robot;
 public class TestTriggers extends SubsystemBase {
   DigitalInput sw = new DigitalInput(Robot.config.DIOTestSwitch);
 
-  public TestTriggers() {
-  }
+  public TestTriggers() {}
 
   @Override
   public void periodic() {

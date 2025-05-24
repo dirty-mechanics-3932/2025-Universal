@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
 
 public class TestSRXPid extends SubsystemBase {
@@ -37,16 +38,19 @@ public class TestSRXPid extends SubsystemBase {
     this.driveHID = driveHID;
     this.leds = leds;
     logf("Start of Test Slider Subsystem\n");
-    motorSRX = new MotorSRX("SRX", id, -1, true);
+    motorSRX = new MotorSRX("SRX", id, -1, new CommandXboxController(driveHID.getPort()), true);
     motorSRX.setInverted(true);
     motorSRX.setSensorPhase(true);
     motorSRX.enableLimitSwitch(false, false);
 
     // Position PID on rio from Eoghan
-    // public static final double pos_rio_kP = 50.0; // Correction proportional to error
-    // public static final double pos_rio_kI = 2.5; // Correction proportional to the sum of all
+    // public static final double pos_rio_kP = 50.0; // Correction proportional to
     // error
-    // public static final double pos_rio_kD = 0.0; // Correction proportional to change in error
+    // public static final double pos_rio_kI = 2.5; // Correction proportional to
+    // the sum of all
+    // error
+    // public static final double pos_rio_kD = 0.0; // Correction proportional to
+    // change in error
     // public static final double pos_climb_kFF = -1.5;
     // public static final double pos_maxI = 5;
     // public static final double max_velo = 0.5; // Trapezoidal max velo
