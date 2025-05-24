@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import static frc.robot.utilities.Util.log;
 import static frc.robot.utilities.Util.logf;
 import static frc.robot.utilities.Util.round2;
 import static frc.robot.utilities.Util.splashScreen;

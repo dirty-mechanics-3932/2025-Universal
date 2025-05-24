@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import static frc.robot.utilities.Util.logf;
 import static frc.robot.utilities.Util.round2;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -19,8 +21,12 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.units.measure.Time;
+import static edu.wpi.first.units.Units.Seconds;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.utilities.Util;
@@ -60,6 +66,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
 
     public MotorFlex(String name, int id, int followId, CommandXboxController controller, boolean logging) {
         this.controller = controller;
+        final SysIdRoutine sysIDNeoMotor;
         this.name = name;
         this.followId = followId;
         this.myLogging = logging;
@@ -321,12 +328,12 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
         if (Math.abs(pos - lastPos) > .05) {
             lastPos = pos;
             if (myLogging) {
-                if (followId > 0) {
-                    logMotorVCS();
-                    logMotorVCS(followMotor);
-                } else {
-                    logMotorVCS();
-                }
+                // if (followId > 0) {
+                //     logMotorVCS();
+                //     logMotorVCS(followMotor);
+                // } else {
+                //     logMotorVCS();
+                // }
             }
         }
     }
@@ -453,4 +460,28 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
         if (followId > 0)
             logMotorVCS(followMotor);
     }
+
+      
+
+    SysIdRoutine sysIDNeoMotor = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            null,
+            null,
+            Time.ofBaseUnits(3.5, Seconds),
+            (state) -> Logger.recordOutput(name + "/SysIdState", state.toString())),
+        new SysIdRoutine.Mechanism((voltage) -> motor.setVoltage(voltage), null, this));
+
+    public Command sysIdQuasistaticNeoMotor(SysIdRoutine.Direction direction) {
+    return run(() -> setSpeed(0.0))
+        .withTimeout(0.5)
+        .andThen(sysIDNeoMotor.quasistatic(direction));
+  }
+
+  /** Returns a command to run a dynamic test in the specified direction. */
+  public Command sysIdDynamicNeoMotor(SysIdRoutine.Direction direction) {
+    return run(() -> setSpeed(0.0))
+        .withTimeout(0.5)
+        .andThen(sysIDNeoMotor.dynamic(direction).withTimeout(1));
+  }
+
 }
