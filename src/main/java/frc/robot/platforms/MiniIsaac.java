@@ -16,23 +16,22 @@ import frc.robot.subsystems.PID;
 
 public class MiniIsaac implements RobotRunnable {
 
-
     private final CommandXboxController m_driveController;
     MotorFlex neoMotor;
     MotorSRX redMotor2;
     SparkMaxConfig motorConfig;
     PID neoPIDMotionMagic;
     Command turnNeoMotor;
-    
+
     public MiniIsaac() {
 
         m_driveController = new CommandXboxController(2);
-        
-        //neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
-        redMotor2 = new MotorSRX("RedMotor", 10, -1, true);
+
+        // neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
+        redMotor2 = new MotorSRX("RedMotor", 10, -1, m_driveController, true);
         motorConfig = new SparkMaxConfig();
-        //neoPIDMotionMagic = new PID("neoMotorPID", 1, 0, 0, 0, 0, -1, 1, false);
-        
+        // neoPIDMotionMagic = new PID("neoMotorPID", 1, 0, 0, 0, 0, -1, 1, false);
+
     }
 
     private double getSpeedFromTriggers() {
@@ -40,14 +39,14 @@ public class MiniIsaac implements RobotRunnable {
         double rightValue = m_driveController.getRightTriggerAxis();
         if (leftValue > 0.05) {
             return leftValue;
-        
-        }else if (rightValue > 0.05) {
+
+        } else if (rightValue > 0.05) {
             return -rightValue;
-        
+
         } else {
             return 0.0;
         }
-      }
+    }
 
     @Override
     public String robotName() {
@@ -56,12 +55,12 @@ public class MiniIsaac implements RobotRunnable {
 
     @Override
     public void teleopInit() {
-        
+
     }
 
     @Override
     public void teleopPeriodic() {
-        
+
         neoMotor.setSpeed(getSpeedFromTriggers());
 
         m_driveController.a().whileTrue(redMotor2.sysIdDynamic(Direction.kForward));

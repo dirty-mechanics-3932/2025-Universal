@@ -5,6 +5,7 @@ import static frc.robot.utilities.Util.logf;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class DrivetrainTestSwerve extends SubsystemBase {
     private int[] stearMotor = { 1, 4, 7, 10 };
@@ -12,7 +13,7 @@ public class DrivetrainTestSwerve extends SubsystemBase {
     private int[] driveMotor = { 3, 6, 9, 12 };
     private final int numberOfMotors = 4;
     private MotorKraken[] motorFlex = new MotorKraken[numberOfMotors];
-    private MotorSparkMax[] motorSpark = new MotorSparkMax[ numberOfMotors];
+    private MotorSparkMax[] motorSpark = new MotorSparkMax[numberOfMotors];
     private CanCoderSubsystem[] canCoders = new CanCoderSubsystem[numberOfMotors];
     private XboxController driveController;
     private boolean lastStart = false;
@@ -20,11 +21,12 @@ public class DrivetrainTestSwerve extends SubsystemBase {
 
     public DrivetrainTestSwerve(XboxController driveController) {
         this.driveController = driveController;
+        CommandXboxController xboxController = new CommandXboxController(driveController.getPort());
         for (int i = 0; i < numberOfMotors; i++) {
-            motorFlex[i] = new MotorKraken("Drive", driveMotor[i], -1, true);
-            motorSpark[i] = new MotorSparkMax("Stear" + i, stearMotor[i], -1, false, false);
+            motorFlex[i] = new MotorKraken("Drive", driveMotor[i], -1, xboxController, true);
+            motorSpark[i] = new MotorSparkMax("Stear" + i, stearMotor[i], -1, xboxController, false, false);
             motorSpark[i].setLogging(true);
-            canCoders[i] = new CanCoderSubsystem("CC"+i, canCoder[i], false);
+            canCoders[i] = new CanCoderSubsystem("CC" + i, canCoder[i], false);
         }
     }
 
