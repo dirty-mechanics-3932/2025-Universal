@@ -20,47 +20,44 @@ public class MiniMini implements RobotRunnable {
     private CommandXboxController m_driveHID;
 
     public MiniMini(CommandXboxController driverHID) {
-        m_redMotor = new MotorSRX("RedMotor", RED_MOTOR_CAN_ID, -1, true);
+        m_redMotor = new MotorSRX("RedMotor", RED_MOTOR_CAN_ID, -1, driverHID, true);
         PID positionPID = new PID("Pos", .08, 0, 0, 0, 0, -1, 1, true);
         PID velocityPID = new PID("Vel", .005, 0, 0, 0, 1.5, -1, 1, true);
         // Motion Magic messes things up positionPID.setMotionMagicSRX(.5, 2.0);
         m_redMotor.setPositionPID(positionPID, 0, FeedbackDevice.QuadEncoder); // set pid for SRX
         m_redMotor.setVelocityPID(velocityPID, 1, FeedbackDevice.QuadEncoder);
-    
-        m_flexMotor = new MotorFlex("FlexMotor", FLEX_MOTOR_CAN_ID, -1, true);
+
+        m_flexMotor = new MotorFlex("FlexMotor", FLEX_MOTOR_CAN_ID, -1, driverHID, true);
         m_flexMotor.setLogging(true);
         m_flexMotor.setTestMode(true);
         // redMotor.setUpForTestCases(leds);
         // redMotor.setLogging(true);
         // redMotor.setEncoderTicksPerRev(2048);
 
-//         MotorFlex flexMotor = new MotorFlex("FlexMotor", 3, -1, true);
-//         flexMotor.setLogging(true);
-//         flexMotor.setTestMode(true);
-//         redMotor.setUpForTestCases(leds);
-//         redMotor.setLogging(true);
-//         redMotor.setEncoderTicksPerRev(2048);
-//         Command redMoveCmd = Commands.run(() ->
-//         redMotor.setSpeed(driveController.getLeftTriggerAxis()), redMotor);
-//         Command neoMoveCmd = Commands.run(() ->
-//         flexMotor.setSpeed(driveController.getRightTriggerAxis()), flexMotor);
-//         new ScheduleCommand(Commands.parallel(redMoveCmd,
-//         neoMoveCmd).ignoringDisable(true)).schedule();
-//         Command miniMove = Commands.run(() ->
-//         flexMotor.setSpeed(driveController.getLeftTriggerAxis()), flexMotor);
-//         driveController.start().onTrue(miniMove);
-//         new ScheduleCommand(miniMove);
+        // MotorFlex flexMotor = new MotorFlex("FlexMotor", 3, -1, true);
+        // flexMotor.setLogging(true);
+        // flexMotor.setTestMode(true);
+        // redMotor.setUpForTestCases(leds);
+        // redMotor.setLogging(true);
+        // redMotor.setEncoderTicksPerRev(2048);
+        // Command redMoveCmd = Commands.run(() ->
+        // redMotor.setSpeed(driveController.getLeftTriggerAxis()), redMotor);
+        // Command neoMoveCmd = Commands.run(() ->
+        // flexMotor.setSpeed(driveController.getRightTriggerAxis()), flexMotor);
+        // new ScheduleCommand(Commands.parallel(redMoveCmd,
+        // neoMoveCmd).ignoringDisable(true)).schedule();
+        // Command miniMove = Commands.run(() ->
+        // flexMotor.setSpeed(driveController.getLeftTriggerAxis()), flexMotor);
+        // driveController.start().onTrue(miniMove);
+        // new ScheduleCommand(miniMove);
     }
 
     @Override
     public void robotInit() {
-        Command redMoveCmd = Commands.run(() ->
-            m_redMotor.setSpeed(m_driveHID.getLeftTriggerAxis()), m_redMotor);
-        Command neoMoveCmd = Commands.run(() ->
-            m_flexMotor.setSpeed(m_driveHID.getRightTriggerAxis()), m_flexMotor);
+        Command redMoveCmd = Commands.run(() -> m_redMotor.setSpeed(m_driveHID.getLeftTriggerAxis()), m_redMotor);
+        Command neoMoveCmd = Commands.run(() -> m_flexMotor.setSpeed(m_driveHID.getRightTriggerAxis()), m_flexMotor);
         new ScheduleCommand(Commands.parallel(redMoveCmd, neoMoveCmd).ignoringDisable(true)).schedule();
-        Command miniMove = Commands.run(() ->
-            m_flexMotor.setSpeed(m_driveHID.getLeftTriggerAxis()), m_flexMotor);
+        Command miniMove = Commands.run(() -> m_flexMotor.setSpeed(m_driveHID.getLeftTriggerAxis()), m_flexMotor);
         m_driveHID.start().onTrue(miniMove);
         new ScheduleCommand(miniMove);
     }

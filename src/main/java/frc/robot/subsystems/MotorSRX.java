@@ -59,6 +59,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   private WPI_TalonSRX motor;
   private WPI_TalonSRX followMotor;
   private String name;
+  private CommandXboxController controller;
   private int id;
   private int followId;
   private double lastSpeed = 0;
@@ -70,8 +71,8 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   private boolean enableTestMode = false;
   public final SysIdRoutine sysID;
 
-  //added for rotation conversion factor
-  private static double ticksPerRevolution = 4096; 
+  // added for rotation conversion factor
+  private static double ticksPerRevolution = 4096;
 
   private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
   private final SysIdRoutine sysId;
@@ -85,8 +86,8 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     public Current currentStatorAmps = Amps.zero();
   }
 
-  public MotorSRX(String name, int id, int followId, boolean logging) {
-
+  public MotorSRX(String name, int id, int followId, CommandXboxController controller, boolean logging) {
+    this.controller = controller;
     sysID = new SysIdRoutine(
         new SysIdRoutine.Config(
             null,
@@ -161,7 +162,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   // returns position in rotations
   public double getPos() {
     return motor.getSelectedSensorPosition() / ticksPerRevolution;
-}
+  }
 
   public void enableLimitSwitch(boolean forward, boolean reverse) {
     if (forward)
@@ -210,8 +211,8 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   }
 
   // public void setVoltage(Voltage value) {
-  //   double numericValue = value.in(Volts);
-  //   motor.set(ControlMode.PercentOutput, numericValue / motor.getBusVoltage());
+  // double numericValue = value.in(Volts);
+  // motor.set(ControlMode.PercentOutput, numericValue / motor.getBusVoltage());
   // }
 
   public void setInverted(boolean invert) {
@@ -229,7 +230,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   public double getActualVelocity() {
     double rawSensorVelocity = motor.getSelectedSensorVelocity(0); // Velocity in ticks per 100ms
     return (rawSensorVelocity / ticksPerRevolution) * 600;
-}
+  }
 
   public int getAnalogPos() {
     return motor.getSensorCollection().getAnalogIn() + 4096 - 1078;
@@ -243,7 +244,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
       updateSmart();
 
     if (enableTestMode) {
-      testCases();
+      testCases(controller);
 
     }
     inputs.position = Rotations.of(getPos());
@@ -253,7 +254,6 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     inputs.currentSupplyAmps = Amps.of(motor.getStatorCurrent());
     Logger.processInputs(name, inputs);
   }
-
 
   public void logPeriodic() {
     double pos = motor.getSensorCollection().getQuadraturePosition();
@@ -507,8 +507,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   boolean lastStart = false;
   double setP = 0;
 
-  void testCases() {
-    CommandXboxController driveController = RobotContainer.driveController;
+  void testCases(CommandXboxController driveController) {
     double value = 0.0;
     // Hiting the start button moves to the next control method
     boolean start = driveController.start().getAsBoolean();

@@ -43,6 +43,7 @@ public class MotorKraken extends SubsystemBase {
   private boolean myLogging = false;
   private boolean testMode = false;
   private String name = "";
+  private CommandXboxController controller;
   private final TalonFX motor;
   private int numberCyclesForDisplay = 1000000;
   // Start at position 0, use slot 0 for Postion Control
@@ -54,7 +55,8 @@ public class MotorKraken extends SubsystemBase {
   // Start at position 0, use slot 2 for position motion magic
   private final VoltageOut voltage = new VoltageOut(0);
 
-  //private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
+  // private MotorKrakenInputsAutoLogged inputs = new
+  // MotorKrakenInputsAutoLogged();
   private final SysIdRoutine sysId;
 
   @AutoLog
@@ -66,7 +68,8 @@ public class MotorKraken extends SubsystemBase {
     public Current currentStatorAmps = Amps.zero();
   }
 
-  public MotorKraken(String name, int id, int followId, boolean logging) {
+  public MotorKraken(String name, int id, int followId, CommandXboxController controller, boolean logging) {
+    this.controller = controller;
     this.name = name;
     // Keep a brake request so we can disable the motor
     // brake = new NeutralOut();
@@ -195,13 +198,14 @@ public class MotorKraken extends SubsystemBase {
       testCases();
     }
 
-    /*inputs.position = motor.getPosition().getValue();
-    inputs.velocity = motor.getVelocity().getValue();
-    inputs.appliedVolts = motor.getMotorVoltage().getValue();
-    inputs.currentStatorAmps = motor.getStatorCurrent().getValue();
-    inputs.currentSupplyAmps = motor.getSupplyCurrent().getValue();
-    */
-    //Logger.processInputs(name);
+    /*
+     * inputs.position = motor.getPosition().getValue();
+     * inputs.velocity = motor.getVelocity().getValue();
+     * inputs.appliedVolts = motor.getMotorVoltage().getValue();
+     * inputs.currentStatorAmps = motor.getStatorCurrent().getValue();
+     * inputs.currentSupplyAmps = motor.getSupplyCurrent().getValue();
+     */
+    // Logger.processInputs(name);
   }
 
   enum Modes {
@@ -219,10 +223,9 @@ public class MotorKraken extends SubsystemBase {
   double setP = 0;
 
   void testCases() {
-    CommandXboxController driveController = RobotContainer.driveController;
     double value;
     // Hiting the start button moves to the next control method
-    boolean start = driveController.start().getAsBoolean();
+    boolean start = controller.start().getAsBoolean();
     if (start && !lastStart) {
       setSpeed(0);
       motor.setPosition(0);
@@ -232,7 +235,7 @@ public class MotorKraken extends SubsystemBase {
     lastStart = start;
     switch (mode) {
       case POSITION:
-        value = driveController.getHID().getPOV() / 10.0;
+        value = controller.getHID().getPOV() / 10.0;
         if (value >= 0.0) {
           if (setP != value)
             logf("%s set position:%.2f\n", name, value);
@@ -242,7 +245,7 @@ public class MotorKraken extends SubsystemBase {
         break;
       case VELOCITY:
         // POV 270 degrees is 100
-        value = driveController.getHID().getPOV() / (270.0 / 100.0);
+        value = controller.getHID().getPOV() / (270.0 / 100.0);
         if (value >= 0) {
           if (setP != value)
             logf("%s set velocity:%.2f\n", name, value);
@@ -252,7 +255,7 @@ public class MotorKraken extends SubsystemBase {
         }
         break;
       case MOTIONMAGIC:
-        value = driveController.getHID().getPOV() / 2.0;
+        value = controller.getHID().getPOV() / 2.0;
         if (value >= 0) {
           if (setP != value)
             logf("%s set magic motion position:%.2f\n", name, value);
@@ -261,7 +264,7 @@ public class MotorKraken extends SubsystemBase {
         }
         break;
       case SPEED:
-        value = Util.getSpeedFromTriggers(driveController);
+        value = Util.getSpeedFromTriggers(controller);
         if (Math.abs(value) > 0.05) {
           if (setP != value)
             logf("Set Test speed:%.2f\n", value);

@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -39,6 +40,7 @@ import frc.robot.utilities.Util;
  */
 
 public class MotorFlex extends SubsystemBase implements MotorDef {
+    private CommandXboxController controller;
     private SparkFlex motor;
     private SparkFlex followMotor;
     private String name;
@@ -55,8 +57,9 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
     private boolean enableTestMode = false;
     private SparkMaxConfig motorConfig;
     private int numberCyclesForDisplay = 1000000;
-    
-    public MotorFlex(String name, int id, int followId, boolean logging) {
+
+    public MotorFlex(String name, int id, int followId, CommandXboxController controller, boolean logging) {
+        this.controller = controller;
         this.name = name;
         this.followId = followId;
         this.myLogging = logging;
@@ -163,12 +166,12 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
     }
 
     public void setLogging(boolean value) {
-        //logf("Set Flex Logging:%b\n", value);
+        // logf("Set Flex Logging:%b\n", value);
         myLogging = value;
     }
 
     public void setTestMode(boolean value) {
-        //logf("Set Flex Test Mode:%b\n", value);
+        // logf("Set Flex Test Mode:%b\n", value);
         enableTestMode = value;
     }
 
@@ -330,11 +333,10 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
 
     public void setSmartTicks(int numberLoopsForDisplay) {
         if (numberLoopsForDisplay <= 0)
-          this.numberCyclesForDisplay = Integer.MAX_VALUE;
+            this.numberCyclesForDisplay = Integer.MAX_VALUE;
         else
-          this.numberCyclesForDisplay = numberLoopsForDisplay;
-      }
-    
+            this.numberCyclesForDisplay = numberLoopsForDisplay;
+    }
 
     @Override
     public void periodic() {
@@ -368,10 +370,9 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
     double setP = 0;
 
     void testCases() {
-        CommandXboxController driveController = RobotContainer.driveController;
         double value = 0;
         // Hiting the start button moves to the next control method
-        boolean start = driveController.start().getAsBoolean();
+        boolean start = controller.start().getAsBoolean();
         if (start && !lastStart) {
             setSpeed(0.0);
             relEncoder.setPosition(0.0);
@@ -381,7 +382,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
         lastStart = start;
         switch (mode) {
             case POSITION:
-                value = driveController.getHID().getPOV() / 22.5;
+                value = controller.getHID().getPOV() / 22.5;
                 if (value >= 0.0) {
                     setPos(value);
                     setP = value;
@@ -389,7 +390,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
                 }
                 break;
             case VELOCITY:
-                value = driveController.getHID().getPOV() * 20;
+                value = controller.getHID().getPOV() * 20;
                 if (value >= 0) {
                     setVelocity(value);
                     setP = value;
@@ -397,7 +398,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
                 }
                 break;
             case POSMAGIC:
-                value = driveController.getHID().getPOV() / 5.0;
+                value = controller.getHID().getPOV() / 5.0;
                 if (value >= 0) {
                     setMagicPositon(value);
                     setP = value;
@@ -405,7 +406,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
                 }
                 break;
             case VELMAGIC:
-                value = driveController.getHID().getPOV() * 20;
+                value = controller.getHID().getPOV() * 20;
                 if (value >= 0) {
                     setMagicVelocity(value);
                     setP = value;
@@ -413,7 +414,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
                 }
                 break;
             case SPEED:
-                value = Util.getSpeedFromTriggers(driveController);
+                value = Util.getSpeedFromTriggers(controller);
                 if (Math.abs(value) > 0.05)
                     logf("Set Test speed:%.2f\n", value);
                 setP = value;

@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Config;
 import frc.robot.Config.DriveType;
 import frc.robot.Robot;
@@ -51,8 +52,11 @@ public class DrivetrainSpark extends SubsystemBase {
 
     public DrivetrainSpark(XboxController driveHID) {
         this.driveHID = driveHID;
-        rightMotor = new MotorSparkMax("Right", Robot.config.driveRight, Robot.config.driveRightFollow, true, false);
-        leftMotor = new MotorSparkMax("Left", Robot.config.driveLeft,Robot.config.driveLeftFollow, true, true);
+        CommandXboxController xboxController = new CommandXboxController(driveHID.getPort());
+        rightMotor = new MotorSparkMax("Right", Robot.config.driveRight, Robot.config.driveRightFollow, xboxController,
+                true, false);
+        leftMotor = new MotorSparkMax("Left", Robot.config.driveLeft, Robot.config.driveLeftFollow, xboxController,
+                true, true);
         rightMotor.zeroEncoder();
         leftMotor.zeroEncoder();
     }

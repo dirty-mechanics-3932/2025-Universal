@@ -5,7 +5,6 @@ import static frc.robot.utilities.Util.logf;
 
 import java.util.Optional;
 
-import com.ctre.phoenix6.hardware.CANcoder;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -49,87 +48,79 @@ import frc.robot.subsystems.TestTriggers;
  */
 public class RobotContainer {
   private Optional<RobotRunnable> runnableRobot = Optional.empty();
-  public SlewRateLimiter neoMotorSlewRateLimiter = new SlewRateLimiter(.5);
-  public static final CommandXboxController driveController = new CommandXboxController(2);
-  private static final XboxController driveHID = driveController.getHID();
 
   public static LedSubsystem leds = new LedSubsystem();
   public DrivetrainSRX drivetrainSRX;
 
-  XboxController controller = new XboxController(2);
-
-  private TestTriggers triggers = new TestTriggers();
-  private CANcoder canCoder;
-
-  private boolean testFlex = false;
-  private boolean testSmartMax = true;
-  private boolean testKraken = false;
-  private boolean testSRX = false;
   private MotorFlex motorFlex;
   private MotorSparkMax motorSparkMax;
   private MotorKraken motorKraken;
   private MotorSRX motorSRX;
 
-  enum Motors {
-    FLEX, MAX, KRAKEN, SRX;
+  // enum Motors {
+  // FLEX, MAX, KRAKEN, SRX;
 
-    public Motors next() {
-      Motors[] values = Motors.values();
-      int nextOrdinal = (this.ordinal() + 1) % values.length;
-      return values[nextOrdinal];
-    }
-  }
+  // public Motors next() {
+  // Motors[] values = Motors.values();
+  // int nextOrdinal = (this.ordinal() + 1) % values.length;
+  // return values[nextOrdinal];
+  // }
+  // }
 
-  private Motors motors = Motors.FLEX; // Set default motor for testing
+  // private Motors motors = Motors.FLEX; // Set default motor for testing
 
-  private void setMotorForTest() {
-    testFlex = false;
-    testSmartMax = false;
-    testKraken = false;
-    testSRX = false;
-    motors = motors.next(); // Get the next mode
-    logf("************** Motor:%s\n", motors.toString());
-    switch (motors) {
-      case FLEX:
-        testFlex = true;
-        break;
-      case MAX:
-        testSmartMax = true;
-        break;
-      case KRAKEN:
-        testKraken = true;
-        break;
-      case SRX:
-        testSRX = true;
-        break;
-    }
-    motorFlex.setTestMode(testFlex);
-    motorFlex.setLogging(testFlex);
-    motorFlex.setSmartTicks(testFlex ? 2 : 0);
-    motorSparkMax.setTestMode(testSmartMax);
-    motorSparkMax.setLogging(testSmartMax);
-    motorSparkMax.setSmartTicks(testSmartMax ? 2 : 0);
-    motorKraken.setTestMode(testKraken);
-    motorKraken.setLogging(testKraken);
-    motorKraken.setSmartTicks(testKraken ? 1 : 0);
-    motorSRX.setTestMode(testSRX);
-    motorSRX.setLogging(testSRX);
-    motorSRX.setSmartTicks(testSRX ? 2 : 0);
-    SmartDashboard.putString("Motor", motors.toString());
-  }
+  // private void setMotorForTest() {
+  // testFlex = false;
+  // testSmartMax = false;
+  // testKraken = false;
+  // testSRX = false;
+  // motors = motors.next(); // Get the next mode
+  // logf("************** Motor:%s\n", motors.toString());
+  // switch (motors) {
+  // case FLEX:
+  // testFlex = true;
+  // break;
+  // case MAX:
+  // testSmartMax = true;
+  // break;
+  // case KRAKEN:
+  // testKraken = true;
+  // break;
+  // case SRX:
+  // testSRX = true;
+  // break;
+  // }
+  // motorFlex.setTestMode(testFlex);
+  // motorFlex.setLogging(testFlex);
+  // motorFlex.setSmartTicks(testFlex ? 2 : 0);
+  // motorSparkMax.setTestMode(testSmartMax);
+  // motorSparkMax.setLogging(testSmartMax);
+  // motorSparkMax.setSmartTicks(testSmartMax ? 2 : 0);
+  // motorKraken.setTestMode(testKraken);
+  // motorKraken.setLogging(testKraken);
+  // motorKraken.setSmartTicks(testKraken ? 1 : 0);
+  // motorSRX.setTestMode(testSRX);
+  // motorSRX.setLogging(testSRX);
+  // motorSRX.setSmartTicks(testSRX ? 2 : 0);
+  // SmartDashboard.putString("Motor", motors.toString());
+  // }
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    double kP;
-    double kI;
-    double kD;
+    CommandXboxController driveController = new CommandXboxController(Config.DRIVE_CONTROLLER_PORT);
+    XboxController driveHID = driveController.getHID();
+
+    // double kP;
+    // double kI;
+    // double kD;
     // PIDController pidNeo = new PIDController(kP, kI, kD);
 
     // Set the default Robot Mode to Cube
     switch (Config.robotType) {
       case Simulation:
+        driveController.back().whileTrue(zeroYawCommand);
         break;
       case BlondeMini:
         runnableRobot = Optional.of(new BlondeMini(driveController));
@@ -168,56 +159,44 @@ public class RobotContainer {
         break;
     }
     logf("Finished Creating RobotContainer\n");
-    if (Config.robotType != RobotType.Simulation) {
-      configureButtonBindings();
-    }
-    SmartDashboard.putData("UpdatePID", hit);
   }
 
-  // Play with string encoder
-  AnalogInput analog = new AnalogInput(3);
-
-  // TODO: Not used. Remove?
-  // public void setLedsForStringEncoder() {
-  // int v = (int) driveController.getHID().getPOV() / 4;
-  // leds.setOneLed(6, v, v, v);
-  // SmartDashboard.putNumber("Volts", analog.getVoltage());
-  // SmartDashboard.putNumber("Value", analog.getValue());
-  // }
-
-  // Command h = Commands.run(() -> logf("Hit\f"));
-
-  Command hit = new InstantCommand(
-      new Runnable() {
-        public void run() {
-          logf("Hit Button\n");
-        }
-      });
-
-  public double squareWithSign(double v) {
-    return (v < 0) ? -(v * v) : (v * v);
+  public Optional<RobotRunnable> robot() {
+    return runnableRobot;
   }
 
   // The following code is an attempt to learn how to program commands
 
-  // Create a command to execute when the DIO switch is hit
-  Command testTrigger = new InstantCommand(
-      new Runnable() {
-        public void run() {
-          logf("DIO Switch Hit\n");
-        }
-      });
+  // Command hit = new InstantCommand(
+  // new Runnable() {
+  // public void run() {
+  // logf("Hit Button\n");
+  // }
+  // });
 
-  // From subsystem testTriggers run the getSwitch method if true
-  Trigger tr = new Trigger(triggers::getSwitch).onTrue(testTrigger);
+  // public double squareWithSign(double v) {
+  // return (v < 0) ? -(v * v) : (v * v);
+  // }
 
-  class hitButton extends Command {
-    @Override
-    public void execute() {
-      // Your code to run when the button is pressed, such as moving a motor
-      System.out.println("My command is running!");
-    }
-  }
+  // // Create a command to execute when the DIO switch is hit
+  // Command testTrigger = new InstantCommand(
+  // new Runnable() {
+  // public void run() {
+  // logf("DIO Switch Hit\n");
+  // }
+  // });
+
+  // // From subsystem testTriggers run the getSwitch method if true
+  // TestTriggers triggers = new TestTriggers();
+  // Trigger tr = new Trigger(triggers::getSwitch).onTrue(testTrigger);
+
+  // class hitButton extends Command {
+  // @Override
+  // public void execute() {
+  // // Your code to run when the button is pressed, such as moving a motor
+  // System.out.println("My command is running!");
+  // }
+  // }
 
   // Command leftxToLeds = new InstantCommand(
   // new Runnable() {
@@ -239,41 +218,10 @@ public class RobotContainer {
 
   // Trigger tr = new Trigger(triggers::getSwitch);
 
-  private void configureButtonBindings() {
-
-    if (Config.robotType == RobotType.MiniKeith) {
-      driveController.back().onTrue(
-          new InstantCommand(
-              new Runnable() {
-                public void run() {
-                  setMotorForTest();
-                }
-              }));
-    }
-
-    driveController.back().whileTrue(zeroYawCommand);
-
-    if (motorKraken != null && testKraken) {
-      driveController.a().whileTrue(motorKraken.sysIdDynamic(Direction.kForward));
-      driveController.b().whileTrue(motorKraken.sysIdDynamic(Direction.kReverse));
-      driveController.x().whileTrue(motorKraken.sysIdQuasistatic(Direction.kForward));
-      driveController.y().whileTrue(motorKraken.sysIdQuasistatic(Direction.kReverse));
-    }
-    if (motorSparkMax != null) {
-      driveController.a().whileTrue(motorSparkMax.sysIdDynamic(Direction.kForward));
-
-      driveController.b().whileTrue(motorSparkMax.sysIdDynamic(Direction.kReverse));
-
-      driveController.x().whileTrue(motorSparkMax.sysIdQuasistatic(Direction.kForward));
-
-      driveController.y().whileTrue(motorSparkMax.sysIdQuasistatic(Direction.kReverse));
-    }
-  }
-
   // Initializes a DigitalInput
-  DigitalInput input = new DigitalInput(Robot.config.DIOTestTrigger);
+  // DigitalInput input = new DigitalInput(Robot.config.DIOTestTrigger);
   // Creates a Debouncer in "both" mode.
-  Debouncer m_debouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
+  // Debouncer m_debouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
 
   // void deB() {
   // // If false the signal must go true for at least .1 seconds before read
@@ -281,8 +229,4 @@ public class RobotContainer {
   // logf("Input Changed:%b\n", input.get());
   // }
   // }
-
-  public Optional<RobotRunnable> robot() {
-    return runnableRobot;
-  }
 }

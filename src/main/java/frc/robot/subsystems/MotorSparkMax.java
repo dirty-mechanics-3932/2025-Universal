@@ -67,6 +67,7 @@ public class MotorSparkMax extends SubsystemBase {
     private SparkRelativeEncoder encoder;
     private SparkMax followMotor;
     private String name;
+    private CommandXboxController controller;
     private int followId;
     private boolean brakeMode;
     private double lastSpeed;
@@ -85,7 +86,9 @@ public class MotorSparkMax extends SubsystemBase {
     private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
     // private final VoltageOut voltage = new VoltageOut(0);
 
-    public MotorSparkMax(String name, int id, int followId, boolean brakeMode, boolean invert) {
+    public MotorSparkMax(String name, int id, int followId, CommandXboxController controller, boolean brakeMode,
+            boolean invert) {
+        this.controller = controller;
         this.name = name;
         this.followId = followId;
         this.brakeMode = brakeMode;
@@ -397,10 +400,9 @@ public class MotorSparkMax extends SubsystemBase {
     double setPoint = 0;
 
     void testCases() {
-        CommandXboxController driveController = RobotContainer.driveController;
         double value;
         // Hiting the start button moves to the next control method
-        boolean start = driveController.start().getAsBoolean();
+        boolean start = controller.start().getAsBoolean();
         if (start && !lastStart) {
             stopMotor();
             setEncoderPosition(0.0);
@@ -410,7 +412,7 @@ public class MotorSparkMax extends SubsystemBase {
         lastStart = start;
         switch (mode) {
             case POSITION:
-                value = driveController.getHID().getPOV() / 10.0;
+                value = controller.getHID().getPOV() / 10.0;
                 if (value >= 0.0) {
                     if (setPoint != value)
                         logf("%s set position:%.6f\n", name, value);
@@ -419,7 +421,7 @@ public class MotorSparkMax extends SubsystemBase {
                 }
                 break;
             case VELOCITY:
-                value = driveController.getHID().getPOV() * 20.0;
+                value = controller.getHID().getPOV() * 20.0;
                 if (value >= 0.0) {
                     if (setPoint != value)
                         logf("%s set velocity:%.2f\n", name, value);
@@ -428,7 +430,7 @@ public class MotorSparkMax extends SubsystemBase {
                 }
                 break;
             case POSMOTIONMAGIC:
-                value = driveController.getHID().getPOV() / 10.0;
+                value = controller.getHID().getPOV() / 10.0;
                 if (value >= 0.0) {
                     if (setPoint != value)
                         logf("%s set position motion magic:%.6f\n", name, value);
@@ -437,7 +439,7 @@ public class MotorSparkMax extends SubsystemBase {
                 }
                 break;
             case VELMOTIONMAGIC:
-                value = driveController.getHID().getPOV() * 20.0;
+                value = controller.getHID().getPOV() * 20.0;
                 if (value >= 0.0) {
                     setVelocityMotionMagic(value);
                     setPoint = value;
@@ -445,7 +447,7 @@ public class MotorSparkMax extends SubsystemBase {
                 }
                 break;
             case SPEED:
-                value = Util.getSpeedFromTriggers(driveController);
+                value = Util.getSpeedFromTriggers(controller);
                 if (Math.abs(value) > 0.15) {
                     if (setPoint != value)
                         logf("%s Set speed:%.2f\n", name, value);
