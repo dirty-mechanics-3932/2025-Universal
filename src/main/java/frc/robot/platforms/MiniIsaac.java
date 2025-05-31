@@ -29,10 +29,10 @@ public class MiniIsaac implements RobotRunnable {
         m_driveController = new CommandXboxController(2);
         
         //neoMotor = new MotorFlex("NeoMotor", 3, -1, true);
-        redMotor2 = new MotorSRX("RedMotor", 10, -1, true);
+        redMotor2 = new MotorSRX("RedMotor", 10, -1, m_driveController, true);
         motorConfig = new SparkMaxConfig();
         
-        neoMotor = new MotorFlex("neoMotor", 3, -1, false);
+        neoMotor = new MotorFlex("neoMotor", 3, -1, m_driveController, false);
     }
 
     private double getSpeedFromTriggers() {
