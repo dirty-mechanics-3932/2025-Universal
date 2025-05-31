@@ -69,13 +69,13 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   private FeedbackDevice feedBackDevice = FeedbackDevice.QuadEncoder;
   private int numberCyclesForDisplay = 10000000;
   private boolean enableTestMode = false;
-  public final SysIdRoutine sysID;
+  public final SysIdRoutine sysIDRedMotor;
 
   // added for rotation conversion factor
   private static double ticksPerRevolution = 4096;
 
   private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
-  private final SysIdRoutine sysId;
+  private final SysIdRoutine sysIdRedMotor;
 
   @AutoLog
   public static class MotorSRXInputs {
@@ -88,7 +88,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
 
   public MotorSRX(String name, int id, int followId, CommandXboxController controller, boolean logging) {
     this.controller = controller;
-    sysID = new SysIdRoutine(
+    sysIDRedMotor = new SysIdRoutine(
         new SysIdRoutine.Config(
             null,
             null,
@@ -104,7 +104,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     errorCode = motor.configFactoryDefault();
 
     // run sysid routine
-    sysId = new SysIdRoutine(
+    sysIdRedMotor = new SysIdRoutine(
         new SysIdRoutine.Config(
             null,
             null,
@@ -549,15 +549,15 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+  public Command sysIdQuasistaticRedMotor(SysIdRoutine.Direction direction) {
     return run(() -> setSpeed(0.0))
         .withTimeout(0.5)
-        .andThen(sysId.quasistatic(direction).withTimeout(5));
+        .andThen(sysIdRedMotor.quasistatic(direction).withTimeout(5));
   }
 
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+  public Command sysIdDynamicRedMotor(SysIdRoutine.Direction direction) {
     return run(() -> setSpeed(0.0))
         .withTimeout(0.5)
-        .andThen(sysId.dynamic(direction).withTimeout(5));
+        .andThen(sysIdRedMotor.dynamic(direction).withTimeout(1));
   }
 }
