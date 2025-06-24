@@ -105,6 +105,6 @@ public class Config {
         } catch (Exception e) {
             logf("***** Error can't convert %s to valid robot type", lines.get(0));
         }
-        logf("\n\n****** Got Robot Type:%s from file *******\n\n", robotType.toString());
+        logf("\n\n****** Robot Type:%s *******\n\n", robotType.toString());
     }
 }
