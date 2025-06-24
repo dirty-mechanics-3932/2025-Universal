@@ -12,8 +12,6 @@ import com.studica.frc.AHRS;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
-import frc.robot.utilities.Util;
 
 public class YawProvider extends SubsystemBase {
   private final AHRS ahrs;
@@ -72,7 +70,7 @@ public class YawProvider extends SubsystemBase {
    */
 
   public  void zeroYaw() {
-    Util.logf("Zero yaw -- previous yaw:%.3f\n", Robot.yaw);
+    //Util.logf("Zero yaw -- previous yaw:%.3f\n", Robot.yaw);
     ahrs.zeroYaw();
   }
 

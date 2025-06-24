@@ -104,12 +104,12 @@ public class Util {
   }
 
   public static void splashScreen(String version) {
-    logf("**********************************************************************\n\n");
+    logf("**********************************************************************\n");
     logf("Robot Type %s Started compiled:%s version:%s\n",
         Config.robotType, Util.showFileTime(), version);
     logf("Alliance:%s yaw:%.2f Battery Volts:%.2f RobotFile:%s\n",
         Robot.alliance.toString(), Robot.yawProvider.getYaw(), RobotController.getBatteryVoltage(), getRobotType());
-    logf("**********************************************************************\n\n");
+    logf("**********************************************************************\n");
   }
 
   public static double range(

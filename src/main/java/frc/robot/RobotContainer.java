@@ -14,7 +14,7 @@ import frc.robot.platforms.BlondeMini;
 import frc.robot.platforms.DarrylMini;
 import frc.robot.platforms.Mando;
 import frc.robot.platforms.MiniIsaac;
-import frc.robot.platforms.MiniKeith;
+import frc.robot.platforms.KeithMini;
 import frc.robot.platforms.MiniMini;
 import frc.robot.platforms.ParadeSrxDriveRobots;
 import frc.robot.platforms.RobotRunnable;
@@ -117,8 +117,8 @@ public class RobotContainer {
       case MiniMini:
         runnableRobot = Optional.of(new MiniMini(driveController));
         break;
-      case MiniKeith: // Test mini
-        runnableRobot = Optional.of(new MiniKeith(driveController));
+      case KeithMini: // Test mini
+        runnableRobot = Optional.of(new KeithMini(driveController));
         break;
       case Squidward:
         runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));

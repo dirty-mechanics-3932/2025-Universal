@@ -62,6 +62,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotInit() {
+    config.getRobotTypeFromFile();
     Logger.addDataReceiver(new WPILOGWriter());
     Logger.addDataReceiver(new NT4Publisher());
     // Initialize URCL
@@ -116,7 +117,7 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     // var robotPlatform = robotContainer.robot();
     // if (robotPlatform.isPresent()) {
-    // robotPlatform.get().robotPeriodic();
+    //   robotPlatform.get().robotPeriodic();
     // }
     CommandScheduler.getInstance().run();
     if (count % 20 == 4) { // Update Dashboard every 20 cycles or 200 milliseconds (20 ms * 10)

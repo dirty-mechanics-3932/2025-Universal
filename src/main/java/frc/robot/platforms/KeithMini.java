@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Config;
 import frc.robot.Robot;
 import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.LedSubsystem;
@@ -15,8 +16,10 @@ import frc.robot.subsystems.MotorKraken;
 import frc.robot.subsystems.MotorSRX;
 import frc.robot.subsystems.MotorSparkMax;
 import frc.robot.subsystems.MotorTester;
+import static frc.robot.utilities.Util.logf;
 
-public class MiniKeith implements RobotRunnable  {
+
+public class KeithMini implements RobotRunnable  {
     private final static int LED_COUNT = 30;
 
     private final static LedSubsystem m_leds = new LedSubsystem();
@@ -35,7 +38,11 @@ public class MiniKeith implements RobotRunnable  {
     private MotorTester m_motorTester;
     private final AnalogInput input = new AnalogInput(3);
 
-    public MiniKeith(CommandXboxController driveHID) {
+    public String robotName() {
+        return Config.robotType.toString();
+    }
+
+    public KeithMini(CommandXboxController driveHID) {
         m_motorFlex = new MotorFlex("motorFlex", 10, -1, driveHID, false);
         m_motorSpark = new MotorSparkMax("sparkMax", 11, -1, driveHID, false, false);
         m_motorKraken = new MotorKraken("motorKraken", 16, -1, driveHID, true);
@@ -87,7 +94,7 @@ public class MiniKeith implements RobotRunnable  {
         m_driveHID.back().whileTrue(new InstantCommand(new Runnable() {
             public void run() {
                 Robot.yawProvider.zeroYaw();
-                logf("Hit back on Game Pad\n");
+                //logf("Hit back on Game Pad\n");
             }
         }));
     }

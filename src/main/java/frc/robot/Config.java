@@ -12,12 +12,12 @@ public class Config {
     public static final int DRIVE_CONTROLLER_PORT = 2;
 
     public enum RobotType {
-        MiniKeith, BlondeMini, Squidward, Kevin, Wooly, Mando, Simulation, DarrylMini, MiniMini, Sibling2025, MiniIsaac
+        KeithMini, BlondeMini, Squidward, Kevin, Wooly, Mando, Simulation, DarrylMini, MiniMini, Sibling2025, MiniIsaac
     };
 
     // Type of Robot
 
-    public static RobotType robotType = RobotType.MiniKeith;
+    public static RobotType robotType = RobotType.KeithMini;
 
     // Pneumatic Control Modules Parameters
     public int pcmHubID = -1;
@@ -91,18 +91,20 @@ public class Config {
     }
 
     public void getRobotTypeFromFile() {
-        String fileName = "/home/lvuser/deploy/robottype.txt";
+        String fileName = "/home/lvuser/deploy/robotType.txt";
         List<String> lines = null;
         try {
             lines = Files.readAllLines(new File(fileName).toPath());
         } catch (Exception e) {
-            logf("Unable to open file:%d in RoboRio\n", fileName);
+            logf("***** Unable to open file:%s in RoboRio Robot type will be: %s\n", fileName, robotType);
+            return;
         }
         try {
-            logf("Robot type from file:%s value:%s/n", fileName, lines.get(0));
+            logf("***** Robot type from file:%s value:%s/n", fileName, lines.get(0));
             robotType = RobotType.valueOf(lines.get(0));
         } catch (Exception e) {
-            logf("Error can't convert %s to valid robot type", lines.get(0));
+            logf("***** Error can't convert %s to valid robot type", lines.get(0));
         }
+        logf("\n\n****** Got Robot Type:%s from file *******\n\n", robotType.toString());
     }
 }
