@@ -5,36 +5,22 @@ import static frc.robot.utilities.Util.logf;
 
 import java.util.Optional;
 
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Config.RobotType;
+import frc.robot.platforms.BlondeMini;
 import frc.robot.platforms.DarrylMini;
 import frc.robot.platforms.Mando;
-import frc.robot.platforms.MiniKeith;
 import frc.robot.platforms.MiniIsaac;
-import frc.robot.platforms.BlondeMini;
+import frc.robot.platforms.MiniKeith;
 import frc.robot.platforms.MiniMini;
 import frc.robot.platforms.ParadeSrxDriveRobots;
 import frc.robot.platforms.RobotRunnable;
 import frc.robot.platforms.Sibling2025;
 import frc.robot.subsystems.DrivetrainJaguar;
 import frc.robot.subsystems.DrivetrainSRX;
-import frc.robot.subsystems.LedSubsystem;
-import frc.robot.subsystems.MotorFlex;
-import frc.robot.subsystems.MotorKraken;
-import frc.robot.subsystems.MotorSRX;
-import frc.robot.subsystems.MotorSparkMax;
-import frc.robot.subsystems.TestTriggers;
 
 /**
  * This class is where the bulk of the robot should be declared. Since be
@@ -49,13 +35,13 @@ import frc.robot.subsystems.TestTriggers;
 public class RobotContainer {
   private Optional<RobotRunnable> runnableRobot = Optional.empty();
 
-  public static LedSubsystem leds = new LedSubsystem();
+  //public static LedSubsystem leds = new LedSubsystem();
   public DrivetrainSRX drivetrainSRX;
 
-  private MotorFlex motorFlex;
-  private MotorSparkMax motorSparkMax;
-  private MotorKraken motorKraken;
-  private MotorSRX motorSRX;
+  // private MotorFlex motorFlex;
+  // private MotorSparkMax motorSparkMax;
+  // private MotorKraken motorKraken;
+  // private MotorSRX motorSRX;
 
   // enum Motors {
   // FLEX, MAX, KRAKEN, SRX;

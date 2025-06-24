@@ -1,31 +1,20 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.Robot.robotContainer;
-import static frc.robot.utilities.Util.logf;
-import static frc.robot.utilities.Util.round2;
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.units.measure.Voltage;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.utilities.Util.logf;
+import static frc.robot.utilities.Util.round2;
+
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.AutoLog;
-import com.ctre.phoenix6.controls.VoltageOut;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkBase.*;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -33,7 +22,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
@@ -41,11 +30,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.utilities.Util;
-
-import com.revrobotics.spark.SparkRelativeEncoder;
 
 /**
  * SPARK MAX controllers are initialized over CAN by constructing a SparkMax
@@ -63,8 +50,8 @@ import com.revrobotics.spark.SparkRelativeEncoder;
 
 public class MotorSparkMax extends SubsystemBase {
     private SparkMax motor;
-    private SparkBase motorS;
-    private SparkRelativeEncoder encoder;
+    //private SparkBase motorS;
+    //private SparkRelativeEncoder encoder;
     private SparkMax followMotor;
     private String name;
     private CommandXboxController controller;

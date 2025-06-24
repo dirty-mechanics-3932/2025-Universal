@@ -1,15 +1,11 @@
 package frc.robot.platforms;
 
-import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.MotorFlex;
 import frc.robot.subsystems.MotorSRX;
 import frc.robot.subsystems.PID;
@@ -70,8 +66,6 @@ public class MiniIsaac implements RobotRunnable {
 
     @Override
     public void teleopPeriodic() {
-
-        
-         
+         SmartDashboard.putNumber("MiniI Sp", getSpeedFromTriggers());
     }
 }

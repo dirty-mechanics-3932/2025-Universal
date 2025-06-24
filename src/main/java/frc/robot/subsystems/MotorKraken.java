@@ -7,7 +7,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.Robot.robotContainer;
 import static frc.robot.utilities.Util.logf;
 
 import org.littletonrobotics.junction.AutoLog;
@@ -33,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.utilities.Util;
 
 // Motion Magic for Kraken has some code at

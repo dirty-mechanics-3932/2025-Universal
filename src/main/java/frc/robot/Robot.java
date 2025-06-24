@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import static frc.robot.utilities.Util.log;
 import static frc.robot.utilities.Util.logf;
 import static frc.robot.utilities.Util.round2;
 import static frc.robot.utilities.Util.splashScreen;
@@ -80,10 +79,10 @@ public class Robot extends LoggedRobot {
     splashScreen("1.5");
     robotContainer = new RobotContainer();
 
-    var robotPlatform = robotContainer.robot();
-    if (robotPlatform.isPresent()) {
-      robotPlatform.get().robotInit();
-    }
+    // var robotPlatform = robotContainer.robot();
+    // if (robotPlatform.isPresent()) {
+    // robotPlatform.get().robotInit();
+    // }
   }
 
   @Override
@@ -91,41 +90,39 @@ public class Robot extends LoggedRobot {
     logf("Start Teleop\n");
     System.gc();
 
-    var robotPlatform = robotContainer.robot();
-    if (robotPlatform.isPresent()) {
-      robotPlatform.get().teleopInit();
-    }
+    // var robotPlatform = robotContainer.robot();
+    // if (robotPlatform.isPresent()) {
+    // robotPlatform.get().teleopInit();
+    // }
   }
 
   @Override
   public void testInit() {
-    var robotPlatform = robotContainer.robot();
-    if (robotPlatform.isPresent()) {
-      robotPlatform.get().testInit();
-    }
+    // var robotPlatform = robotContainer.robot();
+    // if (robotPlatform.isPresent()) {
+    // robotPlatform.get().testInit();
+    // }
   }
 
   @Override
   public void autonomousInit() {
-    var robotPlatform = robotContainer.robot();
-    if (robotPlatform.isPresent()) {
-      robotPlatform.get().testInit();
-    }
+    // var robotPlatform = robotContainer.robot();
+    // if (robotPlatform.isPresent()) {
+    // robotPlatform.get().testInit();
+    // }
   }
 
   @Override
   public void robotPeriodic() {
-    var robotPlatform = robotContainer.robot();
-    if (robotPlatform.isPresent()) {
-      robotPlatform.get().robotPeriodic();
-    }
+    // var robotPlatform = robotContainer.robot();
+    // if (robotPlatform.isPresent()) {
+    // robotPlatform.get().robotPeriodic();
+    // }
     CommandScheduler.getInstance().run();
-
     if (count % 20 == 4) { // Update Dashboard every 20 cycles or 200 milliseconds (20 ms * 10)
       yaw = yawProvider.getYaw();
       SmartDashboard.putNumber("Yaw", round2(yaw));
     }
-
     count++;
   }
 
@@ -141,48 +138,51 @@ public class Robot extends LoggedRobot {
 
     var robotPlatform = robotContainer.robot();
     if (robotPlatform.isPresent()) {
-      robotPlatform.get().teleopPeriodic();
+      try {
+        robotPlatform.get().teleopPeriodic();
+      } catch (Exception e) {
+      }
     }
   }
 
   @Override
   public void autonomousPeriodic() {
-    var robotPlatform = robotContainer.robot();
-    if (robotPlatform.isPresent()) {
-      robotPlatform.get().autonomousPeriodic();
-    }
+    // var robotPlatform = robotContainer.robot();
+    // if (robotPlatform.isPresent()) {
+    // robotPlatform.get().autonomousPeriodic();
+    // }
   }
 
   @Override
   public void disabledPeriodic() {
-    var robotPlatform = robotContainer.robot();
-    if (robotPlatform.isPresent()) {
-      robotPlatform.get().disabledPeriodic();
-    }
+    // var robotPlatform = robotContainer.robot();
+    // if (robotPlatform.isPresent()) {
+    // robotPlatform.get().disabledPeriodic();
+    // }
   }
 
   @Override
   public void disabledInit() {
-    var robotPlatform = robotContainer.robot();
-    if (robotPlatform.isPresent()) {
-      robotPlatform.get().disabledInit();
-    }
+    // var robotPlatform = robotContainer.robot();
+    // if (robotPlatform.isPresent()) {
+    // robotPlatform.get().disabledInit();
+    // }
   }
 
   @Override
   public void autonomousExit() {
-    var robotPlatform = robotContainer.robot();
-    if (robotPlatform.isPresent()) {
-      robotPlatform.get().autonomousExit();
-    }
+    // var robotPlatform = robotContainer.robot();
+    // if (robotPlatform.isPresent()) {
+    // robotPlatform.get().autonomousExit();
+    // }
   }
 
   @Override
   public void disabledExit() {
-    var robotPlatform = robotContainer.robot();
-    if (robotPlatform.isPresent()) {
-      robotPlatform.get().disabledExit();
-    }
+    // var robotPlatform = robotContainer.robot();
+    // if (robotPlatform.isPresent()) {
+    // robotPlatform.get().disabledExit();
+    // }
   }
 
   // @Override

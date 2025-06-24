@@ -1,12 +1,12 @@
 package frc.robot.platforms;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import edu.wpi.first.wpilibj.AnalogInput;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Robot;
 import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.LedSubsystem;
@@ -16,11 +16,11 @@ import frc.robot.subsystems.MotorSRX;
 import frc.robot.subsystems.MotorSparkMax;
 import frc.robot.subsystems.MotorTester;
 
-public class MiniKeith implements RobotRunnable {
+public class MiniKeith implements RobotRunnable  {
     private final static int LED_COUNT = 30;
 
     private final static LedSubsystem m_leds = new LedSubsystem();
-    private static DrivetrainSRX m_drivetrain;
+
     private static CommandXboxController m_driveHID;
 
     private MotorFlex m_motorFlex;
@@ -33,6 +33,7 @@ public class MiniKeith implements RobotRunnable {
 
     private MotorTester.Motors m_testedMotor = MotorTester.Motors.FLEX; // Set default motor for testing
     private MotorTester m_motorTester;
+    private final AnalogInput input = new AnalogInput(3);
 
     public MiniKeith(CommandXboxController driveHID) {
         m_motorFlex = new MotorFlex("motorFlex", 10, -1, driveHID, false);
@@ -40,7 +41,7 @@ public class MiniKeith implements RobotRunnable {
         m_motorKraken = new MotorKraken("motorKraken", 16, -1, driveHID, true);
         m_motorSRX = new MotorSRX("motorSRX", 14, 0, driveHID, true);
         m_driveHID = driveHID;
-        m_drivetrain = new DrivetrainSRX(driveHID.getHID());
+        new DrivetrainSRX(driveHID.getHID());
         m_motorTester = new MotorTester(m_motorFlex, m_motorSpark, m_motorKraken, m_motorSRX);
 
         m_motorSRX.setupForTestCasesRedMotor();
@@ -55,31 +56,33 @@ public class MiniKeith implements RobotRunnable {
             public void run() {
                 try {
                     m_testedMotor = m_motorTester.selectNextMotor();
+                    logf("Test motor type:%s\n", m_testedMotor);
                 } catch (Exception e) {
                     logf("Unable to start MotorTester: %s", e.toString());
                 }
-                switch (m_testedMotor) {
-                    case FLEX:
-                        break;
-                    case MAX:
-                        m_driveHID.a().whileTrue(m_motorSpark.sysIdDynamic(Direction.kForward));
-                        m_driveHID.b().whileTrue(m_motorSpark.sysIdDynamic(Direction.kReverse));
-                        m_driveHID.x().whileTrue(m_motorSpark.sysIdQuasistatic(Direction.kForward));
-                        m_driveHID.y().whileTrue(m_motorSpark.sysIdQuasistatic(Direction.kReverse));
-                        break;
-                    case KRAKEN:
-                        m_driveHID.a().whileTrue(m_motorKraken.sysIdDynamic(Direction.kForward));
-                        m_driveHID.b().whileTrue(m_motorKraken.sysIdDynamic(Direction.kReverse));
-                        m_driveHID.x().whileTrue(m_motorKraken.sysIdQuasistatic(Direction.kForward));
-                        m_driveHID.y().whileTrue(m_motorKraken.sysIdQuasistatic(Direction.kReverse));
-                        break;
-                    case SRX:
-                        break;
-                    default:
-                        break;
-                }
+                // switch (m_testedMotor) {
+                //     case FLEX:
+                //         break;
+                //     case MAX:
+                //         m_driveHID.a().whileTrue(m_motorSpark.sysIdDynamic(Direction.kForward));
+                //         m_driveHID.b().whileTrue(m_motorSpark.sysIdDynamic(Direction.kReverse));
+                //         m_driveHID.x().whileTrue(m_motorSpark.sysIdQuasistatic(Direction.kForward));
+                //         m_driveHID.y().whileTrue(m_motorSpark.sysIdQuasistatic(Direction.kReverse));
+                //         break;
+                //     case KRAKEN:
+                //         m_driveHID.a().whileTrue(m_motorKraken.sysIdDynamic(Direction.kForward));
+                //         m_driveHID.b().whileTrue(m_motorKraken.sysIdDynamic(Direction.kReverse));
+                //         m_driveHID.x().whileTrue(m_motorKraken.sysIdQuasistatic(Direction.kForward));
+                //         m_driveHID.y().whileTrue(m_motorKraken.sysIdQuasistatic(Direction.kReverse));
+                //         break;
+                //     case SRX:
+                //         break;
+                //     default:
+                //         break;
+                // }
             }
         }));
+
 
         m_driveHID.back().whileTrue(new InstantCommand(new Runnable() {
             public void run() {
@@ -101,4 +104,11 @@ public class MiniKeith implements RobotRunnable {
         m_leds.setRangeOfColor(0, number, 0, 0, 0);
         m_leds.setRangeOfColor(0, index, 0, 50, 0);
     }
+
+   
+    public void teleopPeriodic() {
+        SmartDashboard.putNumber("count", Robot.count);
+        SmartDashboard.putNumber("SenVolts", input.getVoltage());
+    }
+
 }

@@ -1,35 +1,18 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Seconds;
-import static frc.robot.Robot.count;
-import static frc.robot.utilities.Util.logf;
-import static frc.robot.utilities.Util.round2;
-
-import org.littletonrobotics.junction.Logger;
-
-import static frc.robot.Robot.robotContainer;
-
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
-//import static edu.wpi.first.units.Units.RotationsPerSecond;
-//import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-//import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Robot.count;
+import static frc.robot.utilities.Util.logf;
+import static frc.robot.utilities.Util.round2;
 
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
-
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -37,18 +20,21 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.utilities.Util;
-import edu.wpi.first.units.measure.*;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 // setSensorPhase() should change the direction reported in the getSelectedSensor*() methods
 // (but not the SensorCollection methods).

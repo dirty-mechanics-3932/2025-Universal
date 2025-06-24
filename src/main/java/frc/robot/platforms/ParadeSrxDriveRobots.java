@@ -5,12 +5,12 @@ import frc.robot.subsystems.DrivetrainSRX;
 
 //used for kevin and squidward
 public class ParadeSrxDriveRobots implements RobotRunnable {
-     private final DrivetrainSRX drivetrainSRX;
-     private final XboxController hid; 
+     //private final DrivetrainSRX drivetrainSRX;
+     //private final XboxController hid; 
      private String robotName; 
      public ParadeSrxDriveRobots(XboxController hid, String robotName){
-        drivetrainSRX = new DrivetrainSRX(hid); 
-        this.hid = hid;
+       new DrivetrainSRX(hid); 
+       
         this.robotName = robotName;
     }
     

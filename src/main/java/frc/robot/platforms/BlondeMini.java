@@ -7,14 +7,12 @@ import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.MotorSparkMax;
 
 public class BlondeMini implements RobotRunnable {
-  // TODO: Unused?
-  // private final DrivetrainSRX m_drivetrainSRX;
   private final MotorSparkMax m_motorSparkMax;
   private final CommandXboxController m_controller;
 
   public BlondeMini(CommandXboxController controller) {
     m_motorSparkMax = new MotorSparkMax("TestMax", 20, -1, controller, false, false);
-    // m_drivetrainSRX = new DrivetrainSRX(controller.getHID());
+    new DrivetrainSRX(controller.getHID());
     this.m_controller = controller;
   }
 

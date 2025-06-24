@@ -19,7 +19,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.units.measure.Time;
 import static edu.wpi.first.units.Units.Seconds;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
+
 import frc.robot.utilities.Util;
 
 /**
@@ -66,7 +65,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef {
 
     public MotorFlex(String name, int id, int followId, CommandXboxController controller, boolean logging) {
         this.controller = controller;
-        final SysIdRoutine sysIDNeoMotor;
+        //final SysIdRoutine sysIDNeoMotor;
         this.name = name;
         this.followId = followId;
         this.myLogging = logging;
