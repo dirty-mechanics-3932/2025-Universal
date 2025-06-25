@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Config.RobotType;
 import frc.robot.platforms.DarrylMini;
+import frc.robot.platforms.Jeff;
 import frc.robot.platforms.BlondeMini;
 import frc.robot.platforms.MiniMini;
 import frc.robot.platforms.ParadeSrxDriveRobots;
@@ -132,6 +133,8 @@ public class RobotContainer {
         break;
       case MiniMini:
         runnableRobot = Optional.of(new MiniMini(3, 10, driveController));
+      case Jeff:
+        runnableRobot = Optional.of(new Jeff(driveController));  
 
         break;
       case MiniKeith: // Test mini

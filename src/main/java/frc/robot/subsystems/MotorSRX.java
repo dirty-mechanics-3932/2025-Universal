@@ -138,6 +138,12 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     }
   }
 
+  public void invertFollow(boolean invert) {
+    if (followId > 0) {
+      followMotor.setInverted(invert);
+    }
+  }
+
   public double getLastSpeed() {
     return lastSpeed;
   }

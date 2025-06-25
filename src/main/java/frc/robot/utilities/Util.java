@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class Util {
   // Logging Methods
@@ -122,5 +123,17 @@ public class Util {
     if (number > max)
       return max;
     return number;
+  }
+
+  public static double getSpeedFromTriggers(CommandXboxController driveController) {
+    double leftValue = driveController.getLeftTriggerAxis();
+    double rightValue = driveController.getRightTriggerAxis();
+    if (leftValue > 0.05) {
+      return leftValue;
+    }
+    if (rightValue > 0.05) {
+      return -rightValue;
+    }
+    return 0.0;
   }
 }
