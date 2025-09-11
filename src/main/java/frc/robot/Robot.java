@@ -192,5 +192,22 @@ public class Robot extends LoggedRobot {
   // // logf("Count:%d\n", count);
   // robotContainer.testLeds();
   // }
-  // }
+  // }\
+
+  private long lastMem = 0;
+  private double lastTime = 0;
+
+  private void logGCollections() {
+    if (count % 20 == 0) {
+      long mem = Runtime.getRuntime().freeMemory();
+      if (mem > lastMem) {
+        double ti = System.currentTimeMillis() / 1000.0;
+        logf("A GC was done and freed:%d mem:%d time:%.2f", mem - lastMem, mem, ti - lastTime);
+        lastTime = ti;
+
+      }
+      SmartDashboard.putNumber("Free Mem", mem);
+      lastMem = mem;
+    }
+  }
 }

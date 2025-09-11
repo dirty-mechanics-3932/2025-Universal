@@ -4,7 +4,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.utilities.Util;
 
 public interface RobotRunnable {
-    private void log(String s) { Util.logf("(%s) %s\n", robotName(), s); }
+    private void log(String s) { //Util.logf("(%s) %s\n", robotName(), s);
+     }
     //public default void logf(String pattern, Object... arguments) { Util.logf("(%s) " + pattern + "\n", robotName(), arguments); }
     //public default void logfPeriodic(String pattern, Object... arguments) { if (Robot.count % 10 == 0) { logf(pattern, arguments); } }
 
