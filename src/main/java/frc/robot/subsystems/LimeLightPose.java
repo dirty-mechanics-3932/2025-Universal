@@ -66,4 +66,8 @@ public class LimeLightPose extends SubsystemBase {
             SmartDashboard.putString("Robot Pose", "No valid pose data");
         }
     }
+
+    public Pose2d getRobotPose() {
+        return new Pose2d(robotPose.getMeasureX(), robotPose.getMeasureY(), robotPose.getRotation());
+    }
 }

@@ -50,8 +50,8 @@ import frc.robot.utilities.Util;
 
 public class MotorSparkMax extends SubsystemBase {
     private SparkMax motor;
-    //private SparkBase motorS;
-    //private SparkRelativeEncoder encoder;
+    // private SparkBase motorS;
+    // private SparkRelativeEncoder encoder;
     private SparkMax followMotor;
     private String name;
     private CommandXboxController controller;

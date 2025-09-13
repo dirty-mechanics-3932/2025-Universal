@@ -80,6 +80,5 @@ public class DrivetrainSRX extends SubsystemBase {
     }
     leftJoy = averageJoy - factor;
     rightJoy = averageJoy + factor;
-}
-
+  }
 }

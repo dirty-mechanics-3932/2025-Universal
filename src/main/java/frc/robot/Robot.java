@@ -80,10 +80,10 @@ public class Robot extends LoggedRobot {
     splashScreen("1.5");
     robotContainer = new RobotContainer();
 
-    // var robotPlatform = robotContainer.robot();
-    // if (robotPlatform.isPresent()) {
-    // robotPlatform.get().robotInit();
-    // }
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+    robotPlatform.get().robotInit();
+    }
   }
 
   @Override
@@ -91,10 +91,10 @@ public class Robot extends LoggedRobot {
     logf("Start Teleop\n");
     System.gc();
 
-    // var robotPlatform = robotContainer.robot();
-    // if (robotPlatform.isPresent()) {
-    // robotPlatform.get().teleopInit();
-    // }
+    var robotPlatform = robotContainer.robot();
+    if (robotPlatform.isPresent()) {
+    robotPlatform.get().teleopInit();
+    }
   }
 
   @Override
