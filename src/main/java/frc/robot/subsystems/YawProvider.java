@@ -10,7 +10,6 @@ package frc.robot.subsystems;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class YawProvider extends SubsystemBase {
@@ -26,8 +25,9 @@ public class YawProvider extends SubsystemBase {
 
   public YawProvider() {
     ahrs = new AHRS(AHRS.NavXComType.kMXP_SPI, 50);
-    an_in_0 = new AnalogInput(getChannelFromPin(PinType.AnalogIn, 0));
-    an_in_1 = new AnalogInput(getChannelFromPin(PinType.AnalogIn, 1));
+    //TODO Re-Enable this at some point Keith -- not sure what this is for???????
+    //an_in_0 = new AnalogInput(getChannelFromPin(PinType.AnalogIn, 0));
+    //an_in_1 = new AnalogInput(getChannelFromPin(PinType.AnalogIn, 1));
   }
 
   /**
@@ -95,8 +95,8 @@ public class YawProvider extends SubsystemBase {
 
   public void navXAnalogUpdate() {
     /* Process Analog Inputs */
-    SmartDashboard.putNumber("AnalogIn0", an_in_0.getAverageVoltage());
-    SmartDashboard.putNumber("AnalogIn1", an_in_1.getAverageVoltage());
+    //SmartDashboard.putNumber("AnalogIn0", an_in_0.getAverageVoltage());
+    //SmartDashboard.putNumber("AnalogIn1", an_in_1.getAverageVoltage());
   }
 
   public final int MAX_NAVX_MXP_DIGIO_PIN_NUMBER = 9;

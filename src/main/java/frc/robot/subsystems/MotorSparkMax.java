@@ -50,8 +50,8 @@ import frc.robot.utilities.Util;
 
 public class MotorSparkMax extends SubsystemBase {
     private SparkMax motor;
-    //private SparkBase motorS;
-    //private SparkRelativeEncoder encoder;
+    // private SparkBase motorS;
+    // private SparkRelativeEncoder encoder;
     private SparkMax followMotor;
     private String name;
     private CommandXboxController controller;
@@ -96,10 +96,6 @@ public class MotorSparkMax extends SubsystemBase {
         myLogging = logging;
         logf("Start Spark Max %s id:%d\n", name, id);
         motor = new SparkMax(id, MotorType.kBrushless);
-        {
-
-        }
-        ;
         setConfig(motor);
         if (followId > 0) {
             followMotor = new SparkMax(followId, MotorType.kBrushless);
@@ -150,9 +146,9 @@ public class MotorSparkMax extends SubsystemBase {
         motorConfig.closedLoop
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 // Set PID values for position control in slot 0
-                .p(0.2, ClosedLoopSlot.kSlot0)
+                .p(0.16, ClosedLoopSlot.kSlot0)
                 .i(0, ClosedLoopSlot.kSlot0)
-                .d(2, ClosedLoopSlot.kSlot0) // was 1
+                .d(0, ClosedLoopSlot.kSlot0) // was 1
                 .outputRange(-1, 1, ClosedLoopSlot.kSlot0);
 
         motorConfig.closedLoop
@@ -209,6 +205,19 @@ public class MotorSparkMax extends SubsystemBase {
     // config.openLoopRampRate(motorC.openLoopRampRate);
     // config.closedLoopRampRate(motorC.openLoopRampRate);
 
+    public void putPIDtoMotor(PID pid, ClosedLoopSlot slot) {
+        motorConfig.closedLoop
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                // Set PID values for position control in slot 0
+                .p(pid.kP, slot)
+                .i(pid.kI, slot)
+                .d(pid.kD, slot)
+                .iZone(pid.kIz, slot)
+                .velocityFF(pid.kF, slot)
+                .outputRange(pid.kMinOutput, pid.kMaxOutput, slot);
+        motor.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
     public void setBrakeMode(boolean value) {
         motorConfig.idleMode(value ? IdleMode.kBrake : IdleMode.kCoast);
     }
@@ -229,6 +238,7 @@ public class MotorSparkMax extends SubsystemBase {
     }
 
     public void setPos(double position) {
+        logf("%s position:%.2f\n", name, position);
         lastDesiredPosition = position;
         motor.getClosedLoopController().setReference(position, ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }

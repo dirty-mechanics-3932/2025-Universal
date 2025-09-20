@@ -62,6 +62,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotInit() {
+    // TODO Make sure file  "/home/lvuser/deploy/robotType.txt" is updated with the correct name ex: BlondeMini
     config.getRobotTypeFromFile();
     Logger.addDataReceiver(new WPILOGWriter());
     Logger.addDataReceiver(new NT4Publisher());
@@ -142,8 +143,10 @@ public class Robot extends LoggedRobot {
       try {
         robotPlatform.get().teleopPeriodic();
       } catch (Exception e) {
+        logf("No Teleop Periodic");
       }
     }
+    
   }
 
   @Override
