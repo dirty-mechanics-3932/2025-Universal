@@ -101,7 +101,6 @@ public class MotorSparkMax extends SubsystemBase {
             followMotor = new SparkMax(followId, MotorType.kBrushless);
             setConfig(followMotor);
         }
-        setBrakeMode(brakeMode);
         relEncoder = motor.getEncoder();
         relEncoder.setPosition(0.0);
 
@@ -127,10 +126,10 @@ public class MotorSparkMax extends SubsystemBase {
          * configuration parameters for the SPARK MAX that we will set below.
          */
         motorConfig = new SparkMaxConfig();
-
+        motorConfig.smartCurrentLimit(40);
         motorConfig.limitSwitch.forwardLimitSwitchEnabled(true);
         motorConfig.limitSwitch.reverseLimitSwitchEnabled(true);
-
+        motorConfig.idleMode(brakeMode ? IdleMode.kBrake : IdleMode.kCoast);
         /*
          * Configure the encoder. For this specific example, we are using the
          * integrated encoder of the NEO, and we don't need to configure it. If
@@ -218,8 +217,24 @@ public class MotorSparkMax extends SubsystemBase {
         motor.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
+    public void setCurrentLimit(int limit) {
+        motorConfig.smartCurrentLimit(limit);
+        motor.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
     public void setBrakeMode(boolean value) {
         motorConfig.idleMode(value ? IdleMode.kBrake : IdleMode.kCoast);
+        brakeMode = value;
+        motor.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
+    public void setVelocityAccelerationError(int acceleration, int velocity, double error, ClosedLoopSlot slot) {
+        // Set MAXMotion parameters
+        motorConfig.closedLoop.maxMotion
+                .maxAcceleration(acceleration, slot)
+                .maxVelocity(velocity, slot)
+                .allowedClosedLoopError(error, slot);
+        motor.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     public double getSpeed() {

@@ -25,8 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.YawProvider;
 
-// import dev.doglog.DogLog;
-// import dev.doglog.DogLogOptions;
 
 /**
  * file:///C:/Users/Public/wpilib/2025/documentation/rtd/frc-docs-latest/index.html#document-docs/software/support/support-resources
@@ -90,7 +88,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopInit() {
     logf("Start Teleop\n");
-    System.gc();
+    //System.gc();
 
     // var robotPlatform = robotContainer.robot();
     // if (robotPlatform.isPresent()) {
@@ -146,6 +144,7 @@ public class Robot extends LoggedRobot {
         logf("No Teleop Periodic");
       }
     }
+   // logGCollections();
     
   }
 
@@ -196,4 +195,21 @@ public class Robot extends LoggedRobot {
   // robotContainer.testLeds();
   // }
   // }
+
+  private long lastMem = 0;
+  private double lastTime = 0;
+
+  private void logGCollections() {
+    if (count % 20 == 0) {
+      long mem = Runtime.getRuntime().freeMemory();
+      if (mem > lastMem) {
+        double ti = System.currentTimeMillis() / 1000.0;
+        logf("A GC was done and freed:%d mem:%d time:%.2f\n", mem - lastMem, mem, ti - lastTime);
+        lastTime = ti;
+
+      }
+      SmartDashboard.putNumber("Free Mem", mem);
+      lastMem = mem;
+    }
+  }
 }

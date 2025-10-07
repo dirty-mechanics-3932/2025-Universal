@@ -45,7 +45,7 @@ public class KeithMini implements RobotRunnable  {
     public KeithMini(CommandXboxController driveHID) {
         m_motorFlex = new MotorFlex("motorFlex", 10, -1, driveHID, false);
         m_motorSpark = new MotorSparkMax("sparkMax", 11, -1, driveHID, false, false);
-        m_motorKraken = new MotorKraken("motorKraken", 16, -1, driveHID, true);
+        m_motorKraken = new MotorKraken("motorKraken", 31, -1, driveHID, true);
         m_motorSRX = new MotorSRX("motorSRX", 14, 0, driveHID, true);
         m_driveHID = driveHID;
         new DrivetrainSRX(driveHID.getHID());
