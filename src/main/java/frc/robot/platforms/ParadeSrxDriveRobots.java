@@ -18,4 +18,8 @@ public class ParadeSrxDriveRobots implements RobotRunnable {
     public String robotName() {
         return robotName; 
     }
+    @Override
+    public void teleopPeriodic() {
+        
+    }
 }

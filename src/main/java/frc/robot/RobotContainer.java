@@ -121,6 +121,8 @@ public class RobotContainer {
         runnableRobot = Optional.of(new KeithMini(driveController));
         break;
       case Squidward:
+        Robot.config.driveRightFollow = 4;
+        Robot.config.driveLeftFollow = 5;
         runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
         break;
       case Kevin: // Ginger Bread Robot

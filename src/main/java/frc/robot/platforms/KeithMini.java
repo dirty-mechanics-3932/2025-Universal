@@ -16,10 +16,11 @@ import frc.robot.subsystems.MotorKraken;
 import frc.robot.subsystems.MotorSRX;
 import frc.robot.subsystems.MotorSparkMax;
 import frc.robot.subsystems.MotorTester;
+import frc.robot.utilities.CanHealthChecker;
+
 import static frc.robot.utilities.Util.logf;
 
-
-public class KeithMini implements RobotRunnable  {
+public class KeithMini implements RobotRunnable {
     private final static int LED_COUNT = 30;
 
     private final static LedSubsystem m_leds = new LedSubsystem();
@@ -36,13 +37,15 @@ public class KeithMini implements RobotRunnable  {
 
     private MotorTester.Motors m_testedMotor = MotorTester.Motors.FLEX; // Set default motor for testing
     private MotorTester m_motorTester;
-    private final AnalogInput input = new AnalogInput(3);
+    private final AnalogInput input = new AnalogInput(3);  
+    private CanHealthChecker canChecker = new CanHealthChecker();
 
     public String robotName() {
         return Config.robotType.toString();
     }
 
     public KeithMini(CommandXboxController driveHID) {
+       
         m_motorFlex = new MotorFlex("motorFlex", 10, -1, driveHID, false);
         m_motorSpark = new MotorSparkMax("sparkMax", 11, -1, driveHID, false, false);
         m_motorKraken = new MotorKraken("motorKraken", 31, -1, driveHID, true);
@@ -68,35 +71,43 @@ public class KeithMini implements RobotRunnable  {
                     logf("Unable to start MotorTester: %s", e.toString());
                 }
                 // switch (m_testedMotor) {
-                //     case FLEX:
-                //         break;
-                //     case MAX:
-                //         m_driveHID.a().whileTrue(m_motorSpark.sysIdDynamic(Direction.kForward));
-                //         m_driveHID.b().whileTrue(m_motorSpark.sysIdDynamic(Direction.kReverse));
-                //         m_driveHID.x().whileTrue(m_motorSpark.sysIdQuasistatic(Direction.kForward));
-                //         m_driveHID.y().whileTrue(m_motorSpark.sysIdQuasistatic(Direction.kReverse));
-                //         break;
-                //     case KRAKEN:
-                //         m_driveHID.a().whileTrue(m_motorKraken.sysIdDynamic(Direction.kForward));
-                //         m_driveHID.b().whileTrue(m_motorKraken.sysIdDynamic(Direction.kReverse));
-                //         m_driveHID.x().whileTrue(m_motorKraken.sysIdQuasistatic(Direction.kForward));
-                //         m_driveHID.y().whileTrue(m_motorKraken.sysIdQuasistatic(Direction.kReverse));
-                //         break;
-                //     case SRX:
-                //         break;
-                //     default:
-                //         break;
+                // case FLEX:
+                // break;
+                // case MAX:
+                // m_driveHID.a().whileTrue(m_motorSpark.sysIdDynamic(Direction.kForward));
+                // m_driveHID.b().whileTrue(m_motorSpark.sysIdDynamic(Direction.kReverse));
+                // m_driveHID.x().whileTrue(m_motorSpark.sysIdQuasistatic(Direction.kForward));
+                // m_driveHID.y().whileTrue(m_motorSpark.sysIdQuasistatic(Direction.kReverse));
+                // break;
+                // case KRAKEN:
+                // m_driveHID.a().whileTrue(m_motorKraken.sysIdDynamic(Direction.kForward));
+                // m_driveHID.b().whileTrue(m_motorKraken.sysIdDynamic(Direction.kReverse));
+                // m_driveHID.x().whileTrue(m_motorKraken.sysIdQuasistatic(Direction.kForward));
+                // m_driveHID.y().whileTrue(m_motorKraken.sysIdQuasistatic(Direction.kReverse));
+                // break;
+                // case SRX:
+                // break;
+                // default:
+                // break;
                 // }
             }
         }));
 
-
         m_driveHID.back().whileTrue(new InstantCommand(new Runnable() {
             public void run() {
                 Robot.yawProvider.zeroYaw();
-                //logf("Hit back on Game Pad\n");
+                // logf("Hit back on Game Pad\n");
             }
         }));
+        //setUpCANTest();
+        //canChecker.runCheck(); // Check CAN bus on startup
+    }
+
+    public void setUpCANTest() {
+        // Register devices by CAN ID
+        canChecker.registerSparkMax(11, "Spark at front");
+        canChecker.registerSparkMax(12, "No Spark");
+        canChecker.registerTalonFX(10, "Flex");
     }
 
     public void setLedsLeftX() {
@@ -112,7 +123,6 @@ public class KeithMini implements RobotRunnable  {
         m_leds.setRangeOfColor(0, index, 0, 50, 0);
     }
 
-   
     public void teleopPeriodic() {
         SmartDashboard.putNumber("count", Robot.count);
         SmartDashboard.putNumber("SenVolts", input.getVoltage());

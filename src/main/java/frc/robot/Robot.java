@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.YawProvider;
 
-
 /**
  * file:///C:/Users/Public/wpilib/2025/documentation/rtd/frc-docs-latest/index.html#document-docs/software/support/support-resources
  *
@@ -57,23 +56,26 @@ public class Robot extends LoggedRobot {
   public static Config config = new Config();
   public static double yaw;
   public static YawProvider yawProvider = new YawProvider();
+  private boolean advantage = false;
 
   @Override
   public void robotInit() {
-    // TODO Make sure file  "/home/lvuser/deploy/robotType.txt" is updated with the correct name ex: BlondeMini
+    // TODO Make sure file "/home/lvuser/deploy/robotType.txt" is updated with the
+    // correct name ex: BlondeMini
     config.getRobotTypeFromFile();
-    Logger.addDataReceiver(new WPILOGWriter());
-    Logger.addDataReceiver(new NT4Publisher());
-    // Initialize URCL
-    Logger.registerURCL(URCL.startExternal());
+    if (advantage) {
+      Logger.addDataReceiver(new WPILOGWriter());
+      Logger.addDataReceiver(new NT4Publisher());
+      // Initialize URCL
+      Logger.registerURCL(URCL.startExternal());
 
-    // Initialize logging data from PDP
-    // LoggedPowerDistribution.getInstance(Constants.powerDistributionCanId,
-    // ModuleType.kRev);
+      // Initialize logging data from PDP
+      // LoggedPowerDistribution.getInstance(Constants.powerDistributionCanId,
+      // ModuleType.kRev);
 
-    // Start AdvantageKit logger
-    Logger.start();
-
+      // Start AdvantageKit logger
+      Logger.start();
+    }
     alliance = DriverStation.getAlliance();
     yawProvider.zeroYaw();
     splashScreen("1.5");
@@ -88,7 +90,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopInit() {
     logf("Start Teleop\n");
-    //System.gc();
+    // System.gc();
 
     // var robotPlatform = robotContainer.robot();
     // if (robotPlatform.isPresent()) {
@@ -114,9 +116,14 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotPeriodic() {
+    if (count % 100 == 0) {
+      long mem = Runtime.getRuntime().freeMemory();
+      SmartDashboard.putNumber("Free Mem", mem);
+    }
+    logGCollections();
     // var robotPlatform = robotContainer.robot();
     // if (robotPlatform.isPresent()) {
-    //   robotPlatform.get().robotPeriodic();
+    // robotPlatform.get().robotPeriodic();
     // }
     CommandScheduler.getInstance().run();
     if (count % 20 == 4) { // Update Dashboard every 20 cycles or 200 milliseconds (20 ms * 10)
@@ -128,10 +135,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    if (count % 100 == 0) {
-      long mem = Runtime.getRuntime().freeMemory();
-      SmartDashboard.putNumber("Free Mem", mem);
-    }
+
     if (count % 50 == 0) {
       // System.gc();
     }
@@ -144,8 +148,8 @@ public class Robot extends LoggedRobot {
         logf("No Teleop Periodic");
       }
     }
-   // logGCollections();
-    
+    // logGCollections();
+
   }
 
   @Override
@@ -204,7 +208,8 @@ public class Robot extends LoggedRobot {
       long mem = Runtime.getRuntime().freeMemory();
       if (mem > lastMem) {
         double ti = System.currentTimeMillis() / 1000.0;
-        logf("A GC was done and freed:%d mem:%d time:%.2f\n", mem - lastMem, mem, ti - lastTime);
+        logf("A GC was done for %s and freed:%d mem:%d time:%.2f\n", config.getRobotName(), mem - lastMem, mem,
+            ti - lastTime);
         lastTime = ti;
 
       }
