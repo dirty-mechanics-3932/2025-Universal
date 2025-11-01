@@ -17,7 +17,7 @@ public class Config {
 
     // Type of Robot
 
-    public static RobotType robotType = RobotType.BlondeMini;
+    public static RobotType robotType = RobotType.Squidward;
 
     // Pneumatic Control Modules Parameters
     public int pcmHubID = -1;
@@ -90,6 +90,10 @@ public class Config {
         return robotType;
     }
 
+    public String getRobotName() {
+        return robotType.toString();
+    }
+    
     public void getRobotTypeFromFile() {
         String fileName = "/home/lvuser/deploy/robotType.txt";
         List<String> lines = null;
