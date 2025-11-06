@@ -16,7 +16,7 @@ import frc.robot.subsystems.MotorKraken;
 import frc.robot.subsystems.MotorSRX;
 import frc.robot.subsystems.MotorSparkMax;
 import frc.robot.subsystems.MotorTester;
-import frc.robot.utilities.CanHealthChecker;
+//import frc.robot.utilities.CanHealthChecker;
 
 import static frc.robot.utilities.Util.logf;
 
@@ -38,7 +38,7 @@ public class KeithMini implements RobotRunnable {
     private MotorTester.Motors m_testedMotor = MotorTester.Motors.FLEX; // Set default motor for testing
     private MotorTester m_motorTester;
     private final AnalogInput input = new AnalogInput(3);  
-    private CanHealthChecker canChecker = new CanHealthChecker();
+    //private CanHealthChecker canChecker = new CanHealthChecker();
 
     public String robotName() {
         return Config.robotType.toString();
@@ -103,12 +103,12 @@ public class KeithMini implements RobotRunnable {
         //canChecker.runCheck(); // Check CAN bus on startup
     }
 
-    public void setUpCANTest() {
-        // Register devices by CAN ID
-        canChecker.registerSparkMax(11, "Spark at front");
-        canChecker.registerSparkMax(12, "No Spark");
-        canChecker.registerTalonFX(10, "Flex");
-    }
+    // public void setUpCANTest() {
+    //     // Register devices by CAN ID
+    //     canChecker.registerSparkMax(11, "Spark at front");
+    //     canChecker.registerSparkMax(12, "No Spark");
+    //     canChecker.registerTalonFX(10, "Flex");
+    // }
 
     public void setLedsLeftX() {
         int num = LED_COUNT - 6;
