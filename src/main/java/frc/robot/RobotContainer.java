@@ -16,6 +16,7 @@ import frc.robot.platforms.Mando;
 import frc.robot.platforms.MiniIsaac;
 import frc.robot.platforms.KeithMini;
 import frc.robot.platforms.MiniMini;
+import frc.robot.platforms.ParadeSparkDriveRobots;
 import frc.robot.platforms.ParadeSrxDriveRobots;
 import frc.robot.platforms.RobotRunnable;
 import frc.robot.platforms.Sibling2025;
@@ -145,6 +146,8 @@ public class RobotContainer {
       case MiniIsaac:
         runnableRobot = Optional.of(new MiniIsaac());
         break;
+      case Train:
+        runnableRobot = Optional.of(new ParadeSparkDriveRobots(driveHID, "Train"));
     }
     logf("Finished Creating RobotContainer\n");
   }

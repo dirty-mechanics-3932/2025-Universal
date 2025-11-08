@@ -12,12 +12,12 @@ public class Config {
     public static final int DRIVE_CONTROLLER_PORT = 2;
 
     public enum RobotType {
-        KeithMini, BlondeMini, Squidward, Kevin, Wooly, Mando, Simulation, DarrylMini, MiniMini, Sibling2025, MiniIsaac
+        KeithMini, BlondeMini, Squidward, Kevin, Wooly, Mando, Simulation, DarrylMini, MiniMini, Sibling2025, MiniIsaac, Train
     };
 
     // Type of Robot
 
-    public static RobotType robotType = RobotType.Squidward;
+    public static RobotType robotType = RobotType.Train;
 
     // Pneumatic Control Modules Parameters
     public int pcmHubID = -1;
@@ -34,8 +34,8 @@ public class Config {
     public boolean driveTrainJaguar = false;
     public int driveRight = 2;
     public int driveLeft = 3;
-    public int driveRightFollow = -1;
-    public int driveLeftFollow = -1;
+    public int driveRightFollow = 4;
+    public int driveLeftFollow = 5;
     public static DriveType driveType = DriveType.MildArcade;
     public boolean invertDrivetrain = true;
     public boolean defaultBrakeMode = true;

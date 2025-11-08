@@ -319,8 +319,8 @@ public class DrivetrainSpark extends SubsystemBase {
     }
 
     private void arcadeMode() {
-        double yValue = driveHID.getLeftY() * -1;
-        double xValue = driveHID.getLeftX() * -1;
+        double yValue = driveHID.getLeftX() * -1;
+        double xValue = driveHID.getLeftY() * -1;
 
         yValue = correctForDeadZone(yValue);
         xValue = correctForDeadZone(xValue);
