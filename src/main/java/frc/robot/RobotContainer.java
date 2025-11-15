@@ -21,6 +21,7 @@ import frc.robot.platforms.RobotRunnable;
 import frc.robot.platforms.Sibling2025;
 import frc.robot.subsystems.DrivetrainJaguar;
 import frc.robot.subsystems.DrivetrainSRX;
+import frc.robot.subsystems.DrivetrainSRX.DriveTrain;
 
 /**
  * This class is where the bulk of the robot should be declared. Since be
@@ -123,10 +124,10 @@ public class RobotContainer {
       case Squidward:
         Robot.config.driveRightFollow = 4;
         Robot.config.driveLeftFollow = 5;
-        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward", DriveTrain.TANK));
         break;
       case Kevin: // Ginger Bread Robot
-        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin", DriveTrain.TANK));
         break;
       case Wooly: // Big ball shooter
         // Uses Jaguars for drive train and shooter
@@ -145,6 +146,8 @@ public class RobotContainer {
       case MiniIsaac:
         runnableRobot = Optional.of(new MiniIsaac());
         break;
+      case Sleigh:
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Sleigh", DriveTrain.ARCADE));
     }
     logf("Finished Creating RobotContainer\n");
   }

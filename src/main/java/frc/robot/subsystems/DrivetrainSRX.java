@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 
+import static frc.robot.utilities.Util.clip;
 import static frc.robot.utilities.Util.logf;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -27,8 +28,18 @@ public class DrivetrainSRX extends SubsystemBase {
   private static SlewRateLimiter sLX = new SlewRateLimiter(DrivetrainSRX.MAX_VELOCITY_METERS_PER_SECOND);
   private static SlewRateLimiter sLY = new SlewRateLimiter(DrivetrainSRX.MAX_VELOCITY_METERS_PER_SECOND);
   private Double targetAngle = null;
+  private double sensitivity = .8;
+  private double deadZone = 0.04;
 
-  public DrivetrainSRX(XboxController driveController) {
+
+  public enum DriveTrain {
+    ARCADE,
+    TANK
+  }
+
+  private DriveTrain driveTrain = DriveTrain.TANK;
+
+  public DrivetrainSRX(XboxController driveController, DriveTrain type) {
     
     logf("Start of Drive Train for SRX Subsystem\n");
     this.driveController = driveController;
@@ -37,12 +48,19 @@ public class DrivetrainSRX extends SubsystemBase {
     talonDriveRight.setInverted(false); // pick CW versus CCW when motor controller is positive/green
     talonDriveLeft.configFactoryDefault();
     talonDriveLeftFollow.follow(talonDriveLeft);
+    driveTrain = type; 
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    // Make sure that you declare this subsystem in RobotContainer.java
+  private double correctForDeadZone(double speed) {
+    if (Math.abs(speed) < deadZone) {
+        return 0;
+    }
+    return speed;
+}
+
+
+  private void tankDrive() {
+    
     leftStick = -driveController.getLeftY();
     sLX.calculate(leftStick);
     sLY.calculate(leftStick);
@@ -67,6 +85,40 @@ public class DrivetrainSRX extends SubsystemBase {
   }
     talonDriveLeft.set(ControlMode.PercentOutput, leftStick); 
     talonDriveRight.set(ControlMode.PercentOutput, rightStick);
+  }
+
+  private void arcadeDrive() {
+        double yValue = driveController.getLeftY() * -1;
+        double xValue = driveController.getLeftX() * -1;
+        yValue = correctForDeadZone(yValue) * sensitivity;
+        xValue = correctForDeadZone(xValue) * sensitivity;
+
+        double leftPower = yValue - xValue;
+        double rightPower = yValue + xValue;
+
+        talonDriveLeft.set(ControlMode.PercentOutput, leftStick);
+        talonDriveRight.set(ControlMode.PercentOutput, rightStick);
+
+        talonDriveLeftFollow.set(ControlMode.PercentOutput, leftStick);
+        talonDriveRightFollow.set(ControlMode.PercentOutput, rightStick);
+
+        if (Math.abs(yValue) > .1 && Math.abs(yValue) > .1) {
+            if (Robot.count % 5 == 0) {
+                logf("Arcade agressive Drive Speed  r:%.3f l:%.3f\n", rightPower, leftPower);
+            }
+        }
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    // Make sure that you declare this subsystem in RobotContainer.java
+    if(driveTrain == DriveTrain.TANK) {
+      tankDrive();
+    } else if (driveTrain == DriveTrain.ARCADE) {
+      arcadeDrive();
+    }
+      
   }
 
   void driveStraight() {

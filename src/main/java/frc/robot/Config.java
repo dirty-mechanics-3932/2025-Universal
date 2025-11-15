@@ -12,12 +12,12 @@ public class Config {
     public static final int DRIVE_CONTROLLER_PORT = 2;
 
     public enum RobotType {
-        KeithMini, BlondeMini, Squidward, Kevin, Wooly, Mando, Simulation, DarrylMini, MiniMini, Sibling2025, MiniIsaac
+        KeithMini, BlondeMini, Squidward, Kevin, Wooly, Mando, Simulation, DarrylMini, MiniMini, Sibling2025, MiniIsaac, Sleigh
     };
 
     // Type of Robot
 
-    public static RobotType robotType = RobotType.Squidward;
+    public static RobotType robotType = RobotType.Sleigh;
 
     // Pneumatic Control Modules Parameters
     public int pcmHubID = -1;
