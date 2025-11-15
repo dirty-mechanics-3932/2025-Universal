@@ -34,8 +34,8 @@ public class Config {
     public boolean driveTrainJaguar = false;
     public int driveRight = 2;
     public int driveLeft = 3;
-    public int driveRightFollow = -1;
-    public int driveLeftFollow = -1;
+    public int driveRightFollow = 4;
+    public int driveLeftFollow = 5;
     public static DriveType driveType = DriveType.MildArcade;
     public boolean invertDrivetrain = true;
     public boolean defaultBrakeMode = true;
