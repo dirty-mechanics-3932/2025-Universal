@@ -37,7 +37,7 @@ public class Config {
     public int driveRightFollow = 4;
     public int driveLeftFollow = 5;
     public static DriveType driveType = DriveType.MildArcade;
-    public boolean invertDrivetrain = true;
+    public boolean invertDrivetrain = false;
     public boolean defaultBrakeMode = true;
     public double wheelBase = 0; //
     public double wheelDiameter = 0;

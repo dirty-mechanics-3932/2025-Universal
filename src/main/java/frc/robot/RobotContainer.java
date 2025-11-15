@@ -124,6 +124,7 @@ public class RobotContainer {
         Robot.config.driveRightFollow = 4;
         Robot.config.driveLeftFollow = 5;
         runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
+        driveController.back().whileTrue(zeroYawCommand);
         break;
       case Kevin: // Ginger Bread Robot
         runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));

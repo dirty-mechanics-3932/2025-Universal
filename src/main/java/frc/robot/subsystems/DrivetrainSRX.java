@@ -43,10 +43,10 @@ public class DrivetrainSRX extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     // Make sure that you declare this subsystem in RobotContainer.java
-    leftStick = -driveController.getLeftY();
+    leftStick = driveController.getLeftY();
     sLX.calculate(leftStick);
     sLY.calculate(leftStick);
-    rightStick = driveController.getRightY(); // make forward stick positive
+    rightStick = -driveController.getRightY(); // make forward stick positive
     if (Robot.count % 250 == -1) { // -1 will disable the log, set to 0 to enable log
       logf("Drive stick left:%.2f right:%.2f\n", leftStick, rightStick);
     }
@@ -58,7 +58,7 @@ public class DrivetrainSRX extends SubsystemBase {
     targetAngle = Robot.yaw;
   }
   if (driveController.getLeftBumperButtonReleased()) {
-    logf("Drive Straight finish goal:%.2f yaw:%.2f\n", targetAngle, Robot.yaw);
+    logf("Drive SRX finish goal:%.2f yaw:%.2f\n", targetAngle, Robot.yaw);
     targetAngle = null;
   }
   if (targetAngle != null) {
@@ -92,13 +92,13 @@ public class DrivetrainSRX extends SubsystemBase {
     // }
     double factor = error * Math.abs(averageJoy) * 0.035; // Was 0.045
     // Log drive straight data every 2.5 seconds
+    leftStick = averageJoy + factor;
+    rightStick = -(averageJoy - factor);
+
     if (Robot.count % 12 == 0) {
         logf("Drive Straight targ:%.2f yaw:%.2f err:%.2f avg:%.2f factor:%.2f Joy:<%.2f,%.2f>\n",
                 targetAngle, Robot.yaw, error,
                 averageJoy, factor,  rightStick, leftStick);
     }
-    leftStick = averageJoy - factor;
-    rightStick = averageJoy + factor;
-}
-
+  }
 }
