@@ -17,6 +17,7 @@ import frc.robot.subsystems.MotorSRX;
 import frc.robot.subsystems.MotorSparkMax;
 import frc.robot.subsystems.MotorTester;
 //import frc.robot.utilities.CanHealthChecker;
+import frc.robot.subsystems.DrivetrainSRX.DriveTrain;
 
 import static frc.robot.utilities.Util.logf;
 
@@ -51,7 +52,7 @@ public class KeithMini implements RobotRunnable {
         m_motorKraken = new MotorKraken("motorKraken", 31, -1, driveHID, true);
         m_motorSRX = new MotorSRX("motorSRX", 14, 0, driveHID, true);
         m_driveHID = driveHID;
-        new DrivetrainSRX(driveHID.getHID());
+        new DrivetrainSRX(driveHID.getHID(), DriveTrain.TANK);
         m_motorTester = new MotorTester(m_motorFlex, m_motorSpark, m_motorKraken, m_motorSRX);
 
         m_motorSRX.setupForTestCasesRedMotor();

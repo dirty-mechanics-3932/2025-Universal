@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.DrivetrainSRX;
+import frc.robot.subsystems.DrivetrainSRX.DriveTrain;
 import frc.robot.subsystems.MotorSparkMax;
 import frc.robot.subsystems.PID;
 
@@ -33,7 +34,7 @@ public class BlondeMini implements RobotRunnable {
     // TODO Shoulder is 20 Elbow is 34 on Keith Mini Shoulder 10 Elbow 11
     motorSparkMaxShoulder = new MotorSparkMax("Shoulder", 20, -1, controller, false, false);
     motorSparkMaxElbow = new MotorSparkMax("Elbow", 34, -1, controller, false, false);
-    new DrivetrainSRX(controller.getHID());
+    new DrivetrainSRX(controller.getHID(), DriveTrain.TANK);
     this.controller = controller;
     // Setup POV for geting transisiton from false to true
     pUp = new onTrueOnly(controller.povUp());

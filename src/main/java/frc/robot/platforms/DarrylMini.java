@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.MotorSRX;
+import frc.robot.subsystems.DrivetrainSRX.DriveTrain;
 
 public class DarrylMini implements RobotRunnable {
 
@@ -17,7 +18,7 @@ public class DarrylMini implements RobotRunnable {
         m_driveController = new CommandXboxController(2);
         m_driveHID = m_driveController.getHID();
         m_dmotor = new MotorSRX("DarrylSRX", 10, -1, m_driveController, true);
-        new DrivetrainSRX(m_driveHID);
+        new DrivetrainSRX(m_driveHID, DriveTrain.TANK);
     }
 
     @Override
