@@ -27,7 +27,7 @@ public class DrivetrainSRX extends SubsystemBase {
   XboxController driveController;
   private static SlewRateLimiter sLX = new SlewRateLimiter(DrivetrainSRX.MAX_VELOCITY_METERS_PER_SECOND);
   private static SlewRateLimiter sLY = new SlewRateLimiter(DrivetrainSRX.MAX_VELOCITY_METERS_PER_SECOND);
-  private Double targetAngle = null;
+  public Double targetAngle = null;
   private double sensitivity = .8;
   private double deadZone = 0.04;
 
@@ -65,15 +65,17 @@ public class DrivetrainSRX extends SubsystemBase {
     sLX.calculate(leftStick);
     sLY.calculate(leftStick);
     rightStick = driveController.getRightY(); // make forward stick positive
-    if (Robot.count % 250 == -1) { // -1 will disable the log, set to 0 to enable log
+    if (Robot.count % 250 == 5) { // -1 will disable the log, set to 0 to enable log
       logf("Drive stick left:%.2f right:%.2f\n", leftStick, rightStick);
     }
     SmartDashboard.putNumber("Right Stick", rightStick);
-
     SmartDashboard.putNumber("Left Stick", leftStick);
+    
   if (driveController.getLeftBumperButtonPressed()) {
     logf("Drive Straight start yaw:%.2f\n", Robot.yaw);
+    if (targetAngle == null) { 
     targetAngle = Robot.yaw;
+    }
   }
   if (driveController.getLeftBumperButtonReleased()) {
     logf("Drive Straight finish goal:%.2f yaw:%.2f\n", targetAngle, Robot.yaw);
@@ -88,19 +90,16 @@ public class DrivetrainSRX extends SubsystemBase {
   }
 
   private void arcadeDrive() {
-        double yValue = driveController.getLeftY() * -1;
-        double xValue = driveController.getLeftX() * -1;
+        double xValue = driveController.getLeftY() * 1;
+        double yValue = driveController.getRightX() * 1;
         yValue = correctForDeadZone(yValue) * sensitivity;
         xValue = correctForDeadZone(xValue) * sensitivity;
 
         double leftPower = yValue - xValue;
         double rightPower = yValue + xValue;
 
-        talonDriveLeft.set(ControlMode.PercentOutput, leftStick);
-        talonDriveRight.set(ControlMode.PercentOutput, rightStick);
-
-        talonDriveLeftFollow.set(ControlMode.PercentOutput, leftStick);
-        talonDriveRightFollow.set(ControlMode.PercentOutput, rightStick);
+        talonDriveLeft.set(ControlMode.PercentOutput, leftPower);
+        talonDriveRight.set(ControlMode.PercentOutput, rightPower);
 
         if (Math.abs(yValue) > .1 && Math.abs(yValue) > .1) {
             if (Robot.count % 5 == 0) {
@@ -115,22 +114,21 @@ public class DrivetrainSRX extends SubsystemBase {
     // Make sure that you declare this subsystem in RobotContainer.java
     if(driveTrain == DriveTrain.TANK) {
       tankDrive();
-    } else if (driveTrain == DriveTrain.ARCADE) {
+    } else  {
       arcadeDrive();
     }
-      
   }
 
   void driveStraight() {
     double error = Robot.yaw - targetAngle;
     if (error > 10) {
-        logf("!!!!! Drive Straight error too positive diff:%.1f yaw:%.1f target:%.3f\n", error,
-                Robot.yaw, targetAngle);
+      //  logf("!!!!! Drive Straight error too positive diff:%.1f yaw:%.1f target:%.3f\n", error,
+               // Robot.yaw, targetAngle);
         error = 5;
     }
     if (error < -10) {
-        logf("!!!!! Drive Straight error too negative diff:%.1f yaw:%.1f target:%.3f\n", error,
-                Robot.yaw, targetAngle);
+       // logf("!!!!! Drive Straight error too negative diff:%.1f yaw:%.1f target:%.3f\n", error,
+        //        Robot.yaw, targetAngle);
         error = -5;
     }
     // Adjsut speed if too fast
@@ -144,13 +142,16 @@ public class DrivetrainSRX extends SubsystemBase {
     // }
     double factor = error * Math.abs(averageJoy) * 0.035; // Was 0.045
     // Log drive straight data every 2.5 seconds
+    factor*=1;
+    leftStick = averageJoy - factor;
+    rightStick = -(averageJoy + factor);
+
     if (Robot.count % 12 == 0) {
         logf("Drive Straight targ:%.2f yaw:%.2f err:%.2f avg:%.2f factor:%.2f Joy:<%.2f,%.2f>\n",
                 targetAngle, Robot.yaw, error,
                 averageJoy, factor,  rightStick, leftStick);
     }
-    leftStick = averageJoy - factor;
-    rightStick = averageJoy + factor;
+ 
 }
 
 }
