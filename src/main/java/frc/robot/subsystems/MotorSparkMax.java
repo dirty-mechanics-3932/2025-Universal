@@ -70,7 +70,8 @@ public class MotorSparkMax extends SubsystemBase {
     private boolean testMode = false;
     private int numberCyclesForDisplay = 1000000;
     private final SysIdRoutine sysId;
-    private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
+    // private MotorKrakenInputsAutoLogged inputs = new
+    // MotorKrakenInputsAutoLogged();
     // private final VoltageOut voltage = new VoltageOut(0);
 
     public MotorSparkMax(String name, int id, int followId, CommandXboxController controller, boolean brakeMode,
@@ -94,12 +95,12 @@ public class MotorSparkMax extends SubsystemBase {
         this.name = name;
         this.followId = followId;
         myLogging = logging;
-        logf("Start Spark Max %s id:%d\n", name, id);
+        logf("Start Spark Max %s id:%d followID:%d\n", name, id, 0);
         motor = new SparkMax(id, MotorType.kBrushless);
-        setConfig(motor);
+        setConfig(motor, -1);
         if (followId > 0) {
             followMotor = new SparkMax(followId, MotorType.kBrushless);
-            setConfig(followMotor);
+            setConfig(followMotor, id);
         }
         relEncoder = motor.getEncoder();
         relEncoder.setPosition(0.0);
@@ -120,7 +121,7 @@ public class MotorSparkMax extends SubsystemBase {
         myLogging = value;
     }
 
-    private void setConfig(SparkMax motor) {
+    private void setConfig(SparkMax motor, int leadID) {
         /*
          * Create a new SPARK MAX configuration object. This will store the
          * configuration parameters for the SPARK MAX that we will set below.
@@ -130,68 +131,63 @@ public class MotorSparkMax extends SubsystemBase {
         motorConfig.limitSwitch.forwardLimitSwitchEnabled(true);
         motorConfig.limitSwitch.reverseLimitSwitchEnabled(true);
         motorConfig.idleMode(brakeMode ? IdleMode.kBrake : IdleMode.kCoast);
-        /*
-         * Configure the encoder. For this specific example, we are using the
-         * integrated encoder of the NEO, and we don't need to configure it. If
-         * needed, we can adjust values like the position or velocity conversion
-         * factors.
-         */
-        motorConfig.encoder
-                .positionConversionFactor(positionConversionFactor)
-                .velocityConversionFactor(velocityConversionFactor);
+        if (leadID > 0) {
+           motorConfig.follow(leadID);
+        }
+    
+    /*
+     * Configure the encoder. For this specific example, we are using the
+     * integrated encoder of the NEO, and we don't need to configure it. If
+     * needed, we can adjust values like the position or velocity conversion
+     * factors.
+     */
+    motorConfig.encoder.positionConversionFactor(positionConversionFactor).velocityConversionFactor(velocityConversionFactor);
 
-        // Configure the closed loop controller. We want to make sure we set the
-        // feedback sensor as the primary encoder.
-        motorConfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                // Set PID values for position control in slot 0
-                .p(0.16, ClosedLoopSlot.kSlot0)
-                .i(0, ClosedLoopSlot.kSlot0)
-                .d(0, ClosedLoopSlot.kSlot0) // was 1
-                .outputRange(-1, 1, ClosedLoopSlot.kSlot0);
+    // Configure the closed loop controller. We want to make sure we set the
+    // feedback sensor as the primary encoder.
+    motorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    // Set PID values for position control in slot 0
+    .p(0.16,ClosedLoopSlot.kSlot0).i(0,ClosedLoopSlot.kSlot0).d(0,ClosedLoopSlot.kSlot0) // was 1
+    .outputRange(-1,1,ClosedLoopSlot.kSlot0);
 
-        motorConfig.closedLoop
-                // Set PID values for velocity control in slot 1
-                .p(0.0001, ClosedLoopSlot.kSlot1)
-                .i(0, ClosedLoopSlot.kSlot1)
-                .d(0, ClosedLoopSlot.kSlot1)
-                .velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1) // Note 5767 is max speed for Velocity PIDs
-                .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
+    motorConfig.closedLoop
+    // Set PID values for velocity control in slot 1
+    .p(0.0001,ClosedLoopSlot.kSlot1).i(0,ClosedLoopSlot.kSlot1).d(0,ClosedLoopSlot.kSlot1).velocityFF(1.0/5767,ClosedLoopSlot.kSlot1) // Note
+                                                                                                                                      // 5767
+                                                                                                                                      // is
+                                                                                                                                      // max
+                                                                                                                                      // speed
+                                                                                                                                      // for
+                                                                                                                                      // Velocity
+                                                                                                                                      // PIDs
+    .outputRange(-1,1,ClosedLoopSlot.kSlot1);
 
-        motorConfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                // Set PID values for motion position control in slot 2
-                .p(1, ClosedLoopSlot.kSlot2)
-                .i(0, ClosedLoopSlot.kSlot2)
-                .d(0, ClosedLoopSlot.kSlot2) // was 1
-                .outputRange(-1, 1, ClosedLoopSlot.kSlot2);
+    motorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    // Set PID values for motion position control in slot 2
+    .p(1,ClosedLoopSlot.kSlot2).i(0,ClosedLoopSlot.kSlot2).d(0,ClosedLoopSlot.kSlot2) // was 1
+    .outputRange(-1,1,ClosedLoopSlot.kSlot2);
 
-        motorConfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                // Set PID values for motion velocity control in slot 3
-                .p(0.0002, ClosedLoopSlot.kSlot3)
-                .i(0, ClosedLoopSlot.kSlot3)
-                .d(0, ClosedLoopSlot.kSlot3) // was 1
-                .outputRange(-1, 1, ClosedLoopSlot.kSlot3);
+    motorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    // Set PID values for motion velocity control in slot 3
+    .p(0.0002,ClosedLoopSlot.kSlot3).i(0,ClosedLoopSlot.kSlot3).d(0,ClosedLoopSlot.kSlot3) // was 1
+    .outputRange(-1,1,ClosedLoopSlot.kSlot3);
 
-        motorConfig.closedLoop.maxMotion
-                // Set MAXMotion parameters for velocity control in slot 1
-                .maxAcceleration(3000, ClosedLoopSlot.kSlot1) // Was 500
-                .maxVelocity(6000, ClosedLoopSlot.kSlot1)
-                .allowedClosedLoopError(.1, ClosedLoopSlot.kSlot1)
-                // Set MAXMotion parameters for position control in slot 2
-                .maxAcceleration(3000, ClosedLoopSlot.kSlot2) // Was 500
-                .maxVelocity(6000, ClosedLoopSlot.kSlot2)
-                .allowedClosedLoopError(.1, ClosedLoopSlot.kSlot2)
-                // Set MAXMotion parameters for velocity control in slot 3
-                .maxAcceleration(3000, ClosedLoopSlot.kSlot3) // Was 500
-                .maxVelocity(6000, ClosedLoopSlot.kSlot3)
-                .allowedClosedLoopError(.1, ClosedLoopSlot.kSlot3);
+    motorConfig.closedLoop.maxMotion
+    // Set MAXMotion parameters for velocity control in slot 1
+    .maxAcceleration(3000,ClosedLoopSlot.kSlot1) // Was 500
+    .maxVelocity(6000,ClosedLoopSlot.kSlot1).allowedClosedLoopError(.1,ClosedLoopSlot.kSlot1)
+    // Set MAXMotion parameters for position control in slot 2
+    .maxAcceleration(3000,ClosedLoopSlot.kSlot2) // Was 500
+    .maxVelocity(6000,ClosedLoopSlot.kSlot2).allowedClosedLoopError(.1,ClosedLoopSlot.kSlot2)
+    // Set MAXMotion parameters for velocity control in slot 3
+    .maxAcceleration(3000,ClosedLoopSlot.kSlot3) // Was 500
+    .maxVelocity(6000,ClosedLoopSlot.kSlot3).allowedClosedLoopError(.1,ClosedLoopSlot.kSlot3);
 
-        // Apply the configuration to the SPARK MAX.
-        // kPersistParameters is used to ensure the configuration is not lost when
-        // the SPARK MAX loses power. This is useful for power cycles that may occur
-        motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    // Apply the configuration to the SPARK MAX.
+    // kPersistParameters is used to ensure the configuration is not lost when
+    // the SPARK MAX loses power. This is useful for power cycles that may occur
+    motor.configure(motorConfig,ResetMode.kResetSafeParameters,PersistMode.kNoPersistParameters);
+
     }
 
     // config.closedLoop.pidf(motorC.kP, motorC.kI, motorC.kD, motorC.kFF);
@@ -343,12 +339,12 @@ public class MotorSparkMax extends SubsystemBase {
             testCases();
         }
 
-        inputs.position = Rotations.of(getPos());
-        inputs.velocity = RPM.of(getSpeed());
-        inputs.appliedVolts = Volts.of(getMotorVoltage());
-        inputs.currentStatorAmps = Amps.of(getMotorCurrent());
-        inputs.currentSupplyAmps = Amps.of(getMotorCurrent());
-        Logger.processInputs(name, inputs);
+        // inputs.position = Rotations.of(getPos());
+        // inputs.velocity = RPM.of(getSpeed());
+        // inputs.appliedVolts = Volts.of(getMotorVoltage());
+        // inputs.currentStatorAmps = Amps.of(getMotorCurrent());
+        // inputs.currentSupplyAmps = Amps.of(getMotorCurrent());
+        // Logger.processInputs(name, inputs);
 
     }
 

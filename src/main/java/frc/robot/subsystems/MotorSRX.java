@@ -60,7 +60,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
   // added for rotation conversion factor
   private static double ticksPerRevolution = 4096;
 
-  private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
+  // private MotorKrakenInputsAutoLogged inputs = new MotorKrakenInputsAutoLogged();
   private final SysIdRoutine sysIdRedMotor;
 
   @AutoLog
@@ -233,12 +233,12 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
       testCases(controller);
 
     }
-    inputs.position = Rotations.of(getPos());
-    inputs.velocity = RPM.of(getActualVelocity());
-    inputs.appliedVolts = Volts.of(motor.getMotorOutputVoltage());
-    inputs.currentStatorAmps = Amps.of(motor.getSupplyCurrent());
-    inputs.currentSupplyAmps = Amps.of(motor.getStatorCurrent());
-    Logger.processInputs(name, inputs);
+    // inputs.position = Rotations.of(getPos());
+    // inputs.velocity = RPM.of(getActualVelocity());
+    // inputs.appliedVolts = Volts.of(motor.getMotorOutputVoltage());
+    // inputs.currentStatorAmps = Amps.of(motor.getSupplyCurrent());
+    // inputs.currentSupplyAmps = Amps.of(motor.getStatorCurrent());
+    // Logger.processInputs(name, inputs);
   }
 
   public void logPeriodic() {

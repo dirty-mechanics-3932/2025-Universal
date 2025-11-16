@@ -138,13 +138,16 @@ public class DrivetrainSpark extends SubsystemBase {
             logf("Drive Straight finish goal:%.2f yaw:%.2f\n", targetAngle, yaw);
             targetAngle = null;
         }
-        if (Config.driveType == DriveType.MildArcade || Config.driveType == DriveType.AggressiveArcade) {
-            arcadeMode();
-            return;
-        }
+        // if (Config.driveType == DriveType.MildArcade || Config.driveType == DriveType.AggressiveArcade) {
+        //     arcadeMode();
+        //     if (Robot.count % 50 == 10) {
+        //         //logf("Motor Spark Max drive right:%.2f left:.2f", rightJoy, leftJoy);
+        //     }
+        //     return;
+        // }
 
-        rightJoy = driveHID.getRightX();
-        leftJoy = driveHID.getLeftY();
+        rightJoy = driveHID.getRightY();
+        leftJoy = -driveHID.getLeftY();
 
         if (targetAngle != null) {
             // If Drive straight active make adjustments
@@ -161,7 +164,7 @@ public class DrivetrainSpark extends SubsystemBase {
 
         showDriveLog = Math.abs(rightJoy) > .06 || Math.abs(leftJoy) > .06;
         if (showDriveLog && Robot.count % 100 == 0) {
-            logf("Pos L:%d R:%d Joy L:%.2f R:%.2f\n", leftMotor.getPos(), rightMotor.getPos(), leftJoy,
+            logf("Pos L:%.2f R:%.2f Joy L:%.2f R:%.2f\n", leftMotor.getPos(), rightMotor.getPos(), leftJoy,
                     rightJoy);
         }
         leftJoy = correctForDeadZone(leftJoy);
@@ -198,8 +201,8 @@ public class DrivetrainSpark extends SubsystemBase {
                     targetAngle, yaw, error,
                     averageJoy, factor, rightJoy, leftJoy);
         }
-        leftJoy = averageJoy - factor;
-        rightJoy = averageJoy + factor;
+        leftJoy = averageJoy + factor;
+        rightJoy = -(averageJoy - factor);
     }
 
     double rampCubed(double joy, double speed, String side) {
@@ -319,8 +322,8 @@ public class DrivetrainSpark extends SubsystemBase {
     }
 
     private void arcadeMode() {
-        double yValue = driveHID.getLeftX() * -1;
-        double xValue = driveHID.getLeftY() * -1;
+        double xValue = driveHID.getLeftY() * 1;
+        double yValue = driveHID.getRightX() * 1;
 
         yValue = correctForDeadZone(yValue);
         xValue = correctForDeadZone(xValue);
@@ -328,8 +331,8 @@ public class DrivetrainSpark extends SubsystemBase {
         yValue *= sensitivity;
         xValue *= sensitivity;
 
-        double leftPower = yValue - xValue;
-        double rightPower = yValue + xValue;
+        double leftPower = yValue + xValue;
+        double rightPower = yValue - xValue;
 
         leftMotor.setSpeed(clip(leftPower, -1.0, 1.0));
         rightMotor.setSpeed(clip(rightPower, -1.0, 1.0));
