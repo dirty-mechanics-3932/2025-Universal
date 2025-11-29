@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 
+import static frc.robot.utilities.Util.clip;
 import static frc.robot.utilities.Util.logf;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -19,6 +20,8 @@ public class DrivetrainSRX extends SubsystemBase {
   public final static double MAX_VELOCITY_METERS_PER_SECOND = .1;
   public double leftStick;
   public double rightStick;
+  private double deadZone = 0.04;
+  private double sensitivity = 0.6;
   TalonSRX talonDriveRight = new TalonSRX(Robot.config.driveRight);
   TalonSRX talonDriveRightFollow = new TalonSRX(Robot.config.driveRightFollow);
   TalonSRX talonDriveLeft = new TalonSRX(Robot.config.driveLeft);
@@ -39,20 +42,37 @@ public class DrivetrainSRX extends SubsystemBase {
     talonDriveLeftFollow.follow(talonDriveLeft);
   }
 
+  public enum DriveType {
+    None, Tank, MildTank, AggressiveTank, MildArcade, AggressiveArcade, MildCurvature, CurvatureAggressive
+  };
+
+  public static DriveType driveType = DriveType.AggressiveArcade;
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     // Make sure that you declare this subsystem in RobotContainer.java
     leftStick = driveController.getLeftY();
-    sLX.calculate(leftStick);
-    sLY.calculate(leftStick);
     rightStick = -driveController.getRightY(); // make forward stick positive
-    if (Robot.count % 250 == -1) { // -1 will disable the log, set to 0 to enable log
-      logf("Drive stick left:%.2f right:%.2f\n", leftStick, rightStick);
-    }
-    SmartDashboard.putNumber("Right Stick", rightStick);
 
-    SmartDashboard.putNumber("Left Stick", leftStick);
+    switch (driveType) {
+      case Tank:
+        sLX.calculate(leftStick);
+        sLY.calculate(leftStick);
+        if (Robot.count % 250 == -1) { // -1 will disable the log, set to 0 to enable log
+          logf("Drive stick left:%.2f right:%.2f\n", leftStick, rightStick);
+        }
+        SmartDashboard.putNumber("Right Stick", rightStick);
+        SmartDashboard.putNumber("Left Stick", leftStick);
+        talonDriveLeft.set(ControlMode.PercentOutput, leftStick); 
+        talonDriveRight.set(ControlMode.PercentOutput, rightStick);
+        break;
+        
+      case AggressiveArcade:
+        arcadeMode();
+        break;
+    }
+
   if (driveController.getLeftBumperButtonPressed()) {
     logf("Drive Straight start yaw:%.2f\n", Robot.yaw);
     targetAngle = Robot.yaw;
@@ -65,12 +85,12 @@ public class DrivetrainSRX extends SubsystemBase {
     // If Drive straight active make adjustments
     driveStraight();
   }
-    talonDriveLeft.set(ControlMode.PercentOutput, leftStick); 
-    talonDriveRight.set(ControlMode.PercentOutput, rightStick);
   }
 
   void driveStraight() {
     double error = Robot.yaw - targetAngle;
+    leftStick = driveController.getLeftY();
+    rightStick = -driveController.getRightY(); // make forward stick positive
     if (error > 10) {
         logf("!!!!! Drive Straight error too positive diff:%.1f yaw:%.1f target:%.3f\n", error,
                 Robot.yaw, targetAngle);
@@ -101,4 +121,28 @@ public class DrivetrainSRX extends SubsystemBase {
                 averageJoy, factor,  rightStick, leftStick);
     }
   }
+
+  private double correctForDeadZone(double speed) {
+    if (Math.abs(speed) < deadZone) {
+        return 0;
+    }
+    return speed;
+}
+
+    private void arcadeMode() {
+        double xValue = driveController.getLeftY() * 1;
+        double yValue = driveController.getRightX() * -1;
+
+        yValue = correctForDeadZone(yValue);
+        xValue = correctForDeadZone(xValue);
+
+        yValue *= sensitivity;
+        xValue *= sensitivity;
+
+        double leftPower = yValue - xValue;
+        double rightPower = yValue + xValue;
+
+        talonDriveLeft.set(ControlMode.PercentOutput, leftPower); 
+        talonDriveRight.set(ControlMode.PercentOutput, rightPower); 
+      }
 }
