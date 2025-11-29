@@ -147,7 +147,7 @@ public class RobotContainer {
         runnableRobot = Optional.of(new MiniIsaac());
         break;
       case Sleigh:
-        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Sleigh", DriveTrain.TANK));
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Sleigh", DriveTrain.ARCADE));
     }
     logf("Finished Creating RobotContainer\n");
   }

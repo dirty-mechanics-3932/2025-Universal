@@ -37,7 +37,7 @@ public class DrivetrainSRX extends SubsystemBase {
     TANK
   }
 
-  private DriveTrain driveTrain = DriveTrain.TANK;
+  private DriveTrain driveTrain = DriveTrain.ARCADE;
 
   public DrivetrainSRX(XboxController driveController, DriveTrain type) {
     
@@ -90,13 +90,14 @@ public class DrivetrainSRX extends SubsystemBase {
   }
 
   private void arcadeDrive() {
-        double xValue = driveController.getLeftY() * 1;
+        double xValue = driveController.getLeftY() * -1;
         double yValue = driveController.getRightX() * 1;
+
         yValue = correctForDeadZone(yValue) * sensitivity;
         xValue = correctForDeadZone(xValue) * sensitivity;
 
-        double leftPower = yValue - xValue;
-        double rightPower = yValue + xValue;
+        double leftPower = yValue + xValue;
+        double rightPower = yValue - xValue;
 
         talonDriveLeft.set(ControlMode.PercentOutput, leftPower);
         talonDriveRight.set(ControlMode.PercentOutput, rightPower);
@@ -114,7 +115,8 @@ public class DrivetrainSRX extends SubsystemBase {
     // Make sure that you declare this subsystem in RobotContainer.java
     if(driveTrain == DriveTrain.TANK) {
       tankDrive();
-    } else  {
+    }  
+    if(driveTrain == DriveTrain.ARCADE){
       arcadeDrive();
     }
   }
