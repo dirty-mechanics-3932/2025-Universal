@@ -1,24 +1,48 @@
 package frc.robot.platforms;
 
-import edu.wpi.first.wpilibj.XboxController;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.DrivetrainSRX;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.subsystems.MotorFlex;
 import frc.robot.subsystems.MotorSRX;
+import frc.robot.subsystems.PID;
 
 public class MiniRaph implements RobotRunnable {
-   
-    MotorSRX m_rmotor;
-    final XboxController m_driveHID;
-    final CommandXboxController m_driveController;
 
+
+    private final CommandXboxController m_driveController;
+    MotorFlex neoMotor;
+    MotorSRX redMotor2;
+    SparkMaxConfig motorConfig;
+    PID neoPIDMotionMagic;
+    Command turnNeoMotor;
+    
     public MiniRaph() {
+
         m_driveController = new CommandXboxController(2);
-        m_driveHID = m_driveController.getHID();
-        m_rmotor = new MotorSRX("RaphSRX", 11, -1, m_driveController, true);
-        new DrivetrainSRX(m_driveHID);
+        
+
+        redMotor2 = new MotorSRX("RedMotor", 10, -1, m_driveController, true);
+        motorConfig = new SparkMaxConfig();
+        
+        neoMotor = new MotorFlex("neoMotor", 3, -1, m_driveController, false);
     }
+
+    private double getSpeedFromTriggers() {
+        double leftValue = m_driveController.getLeftTriggerAxis();
+        double rightValue = m_driveController.getRightTriggerAxis();
+        if (leftValue > 0.05) {
+            return leftValue;
+        
+        }else if (rightValue > 0.05) {
+            return -rightValue;
+        
+        } else {
+            return 0.0;
+        }
+      }
 
     @Override
     public String robotName() {
@@ -26,10 +50,21 @@ public class MiniRaph implements RobotRunnable {
     }
 
     @Override
-    public void robotInit() {
-        Command raphMoveBack = Commands.run(() -> m_rmotor.setSpeed(getTriggerValue(m_driveController)), m_rmotor);
-        raphMoveBack.ignoringDisable(true).schedule(); 
+    public void teleopInit() {
+        m_driveController.leftTrigger().whileTrue(neoMotor.sysIdDynamicNeoMotor(Direction.kForward));
+        m_driveController.rightTrigger().whileTrue(neoMotor.sysIdDynamicNeoMotor(Direction.kReverse));
+        m_driveController.leftBumper().whileTrue(neoMotor.sysIdQuasistaticNeoMotor(Direction.kForward));
+        m_driveController.rightBumper().whileTrue(neoMotor.sysIdQuasistaticNeoMotor(Direction.kReverse));
+        
+        m_driveController.a().whileTrue(redMotor2.sysIdDynamicRedMotor(Direction.kForward));
+        m_driveController.b().whileTrue(redMotor2.sysIdDynamicRedMotor(Direction.kReverse));
+        m_driveController.x().whileTrue(redMotor2.sysIdQuasistaticRedMotor(Direction.kForward));
+        m_driveController.y().whileTrue(redMotor2.sysIdQuasistaticRedMotor(Direction.kReverse));
+        
+    }
 
+    @Override
+    public void teleopPeriodic() {
+         SmartDashboard.putNumber("MiniRaph Speed", getSpeedFromTriggers());
+    }
 }
-}
-
